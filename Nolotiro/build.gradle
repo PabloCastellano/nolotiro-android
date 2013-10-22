@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.6.+'
+    }
+}
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "17.0.0"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 18
+    }
+}
+
+dependencies {
+	compile 'com.android.support:support-v4:13.0.0'
+
+	// You must install or update the Support Repository through the SDK manager to use this dependency.
+	// The Support Repository (separate from the corresponding library) can be found in the Extras category.
+	// compile 'com.android.support:appcompat-v7:0.0.+'
+	compile 'com.android.support:gridlayout-v7:13.0.0'
+}
