@@ -1,7 +1,6 @@
 package org.alabs.nolotiro;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,12 +8,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -51,13 +55,23 @@ public class MainActivity extends ActionBarActivity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        List<String> feed = new ArrayList<String>();
+        ArrayAdapter<String> adapter;
+
         public PlaceholderFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            ListView feedView = (ListView) rootView.findViewById(R.id.listFeed);
+            adapter = new ArrayAdapter<String>(inflater.getContext(), android.R.layout.simple_list_item_1, feed);
+            feedView.setAdapter(adapter);
+            feed.add("Hola mundo");
+            adapter.notifyDataSetChanged();
+
             return rootView;
         }
     }
