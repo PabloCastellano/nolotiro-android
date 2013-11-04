@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="interval_update"
+        android:title="@string/pref_title_interval_update"
+        android:defaultValue="15"
+        android:entries="@array/pref_interval_updates_titles"
+        android:entryValues="@array/pref_interval_updates_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <EditTextPreference
+        android:key="alert_keywords"
+        android:title="@string/pref_title_keywords"
+        android:selectAllOnFocus="true" />
+
+</PreferenceScreen>

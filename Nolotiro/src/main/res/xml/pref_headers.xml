@@ -1,0 +1,21 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="org.alabs.nolotiro.SettingsActivity$GeneralPreferenceFragment"
+        android:title="@string/pref_header_general" />
+
+    <header
+        android:fragment="org.alabs.nolotiro.SettingsActivity$AlertsPreferenceFragment"
+        android:title="@string/pref_header_alerts" />
+
+    <header
+        android:fragment="org.alabs.nolotiro.SettingsActivity$UsernamePreferenceFragment"
+        android:title="@string/pref_header_username" />
+
+    <header
+        android:fragment="org.alabs.nolotiro.SettingsActivity$AdvancedPreferenceFragment"
+        android:title="@string/pref_header_advanced" />
+
+</preference-headers>
