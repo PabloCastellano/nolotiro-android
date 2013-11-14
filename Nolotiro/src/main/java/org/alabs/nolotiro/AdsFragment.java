@@ -2,6 +2,7 @@ package org.alabs.nolotiro;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -36,5 +37,6 @@ public class AdsFragment extends ListFragment {
     public void refreshAds() {
         UpdateAdsTask updateTask = new UpdateAdsTask(this);
         updateTask.execute(DEFAULT_WOEID);
+        Log.i("AdsFragment", "Refresh");
     }
 }

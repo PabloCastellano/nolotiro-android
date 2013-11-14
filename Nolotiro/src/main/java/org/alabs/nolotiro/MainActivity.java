@@ -20,44 +20,48 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBar.Tab;
 
 public class MainActivity extends ActionBarActivity {
 
-    @Override
+    private static final String GIVES_TAG = "gives";
+    private static final String WANTS_TAG = "wants";
+    private ActionBar actionBar;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         Tab tab = actionBar.newTab()
-                .setText("Gives")
-                .setTabListener(new TabListener<AdsFragment>(
-                        this, "gives", AdsFragment.class));
+                .setText(R.string.gives)
+                .setTabListener(new TabListener<AdsFragment>(this, GIVES_TAG, AdsFragment.class));
         actionBar.addTab(tab);
 
         tab = actionBar.newTab()
-                .setText("Wants")
-                .setTabListener(new TabListener<AdsFragment>(
-                        this, "wants", AdsFragment.class));
+                .setText(R.string.wants)
+                .setTabListener(new TabListener<AdsFragment>(this, WANTS_TAG, AdsFragment.class));
         actionBar.addTab(tab);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
+            case R.id.action_refresh:
+                //AdsFragment fragment
+                //ActionBar.Tab t = actionBar.getSelectedTab();
+                //fragment.refreshAds();
+                // FIXME: getSupportFragmentManager() doesn't have findFragmentByTag() method
+                //Fragment f = this.getFragmentManager().findFragmentByTag(GIVES_TAG);
+                return true;
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
@@ -66,7 +70,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
+    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
         private Fragment mFragment;
         private final Activity mActivity;
         private final String mTag;
@@ -97,6 +101,11 @@ public class MainActivity extends ActionBarActivity {
         public void onTabReselected(Tab tab, FragmentTransaction fragmentTransaction) {
 
         }
+
+        public Fragment getFragment() {
+            return mFragment;
+        }
+
     }
 
 }
