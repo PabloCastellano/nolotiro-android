@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 // This task retrieves ads and updates the ListView
+// TODO: Params should be some kind of Action with opcode and real param: ex. "RetrieveGiveAds, woeid"
 public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
+
+    private static final String TAG = "UpdateAdsTask";
 
     private ProgressDialog progress;
     private ListFragment fragment;
@@ -33,7 +36,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
 
                 /*
                 if (ads == null) {
-
+                    Log.w(TAG, "onPostExecute: ads is null")
                 }
 
                 for (Ad a : ads) {
@@ -68,6 +71,14 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         ad.setTitle("Motor ACME");
         ad.setBody("Vendo este super motor!");
         ads.add(ad);
+
+        //if (isCancelled()) break;
+
+        try {
+            Thread.sleep(2000);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
 
         return ads;
     }

@@ -5,19 +5,17 @@ import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-// TODO: Just one instance of UpdateAdsTask
 public class AdsFragment extends ListFragment {
 
-    private static UpdateAdsTask updateTask;
     private static final Integer DEFAULT_WOEID = 766356;
 
     public AdsFragment() {
-        updateTask = new UpdateAdsTask(this);
+
     }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        updateTask.execute(DEFAULT_WOEID);
+        refreshAds();
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -35,4 +33,8 @@ public class AdsFragment extends ListFragment {
         // TODO: Show ad in detail
     }
 
+    public void refreshAds() {
+        UpdateAdsTask updateTask = new UpdateAdsTask(this);
+        updateTask.execute(DEFAULT_WOEID);
+    }
 }
