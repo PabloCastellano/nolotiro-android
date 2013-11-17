@@ -9,6 +9,7 @@ import android.widget.ListView;
 public class AdsFragment extends ListFragment {
 
     private static final Integer DEFAULT_WOEID = 766356;
+    private static final String TAG = "AdsFragment";
 
     public AdsFragment() {
 
@@ -37,6 +38,6 @@ public class AdsFragment extends ListFragment {
     public void refreshAds() {
         UpdateAdsTask updateTask = new UpdateAdsTask(this);
         updateTask.execute(DEFAULT_WOEID);
-        Log.i("AdsFragment", "Refresh");
+        Log.i(TAG, "Refresh");
     }
 }

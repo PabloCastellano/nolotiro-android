@@ -2,28 +2,28 @@ package org.alabs.nolotiro;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.v7.app.ActionBar.Tab;
+import android.widget.EditText;
+import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity {
+import org.alabs.nolotiro.dialogs.ChangeLocationDialogFragment;
+import org.alabs.nolotiro.dialogs.ChooseLocationDialogFragment;
+import org.alabs.nolotiro.dialogs.FindLocationDialogFragment;
 
+public class MainActivity extends ActionBarActivity implements ChangeLocationDialogFragment.ChangeLocationDialogListener,
+        FindLocationDialogFragment.FindLocationDialogListener, ChooseLocationDialogFragment.ChooseLocationDialogListener {
+
+    private static final String TAG = "MainActivity";
     private static final String GIVES_TAG = "gives";
     private static final String WANTS_TAG = "wants";
     private ActionBar actionBar;
@@ -54,7 +54,11 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
+            case R.id.action_location:
+                showChangeLocationDialog();
+                return true;
             case R.id.action_refresh:
                 //AdsFragment fragment
                 //ActionBar.Tab t = actionBar.getSelectedTab();
@@ -63,11 +67,38 @@ public class MainActivity extends ActionBarActivity {
                 //Fragment f = this.getFragmentManager().findFragmentByTag(GIVES_TAG);
                 return true;
             case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //step1
+    public void showChangeLocationDialog() {
+        ChangeLocationDialogFragment frag = new ChangeLocationDialogFragment();
+        frag.show(getSupportFragmentManager(), "ChangeLocationDialogFragment");
+    }
+
+    // step2: This is called when user has chosen to add a new location
+    public void onChangeDialogNeutralClick(DialogFragment dialog) {
+        DialogFragment frag = new FindLocationDialogFragment();
+        frag.show(getSupportFragmentManager(), "FindLocationDialog");
+    }
+
+    // step3: Find woeid
+    public void onFindDialogPositiveClick(DialogFragment dialog, String location) {
+        Log.i(TAG, "location: " + location);
+        dialog.dismiss();
+
+        DialogFragment frag = new ChooseLocationDialogFragment(location);
+        frag.show(getSupportFragmentManager(), "ChooseLocationDialog");
+    }
+
+    @Override
+    public void onChooseDialogPositiveClick(DialogFragment dialog, Woeid woeid) {
+        Toast.makeText(this, woeid.toString(), Toast.LENGTH_SHORT).show();
+        dialog.dismiss();
     }
 
     public class TabListener<T extends Fragment> implements ActionBar.TabListener {

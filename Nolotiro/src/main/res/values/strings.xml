@@ -3,10 +3,21 @@
 
     <string name="app_name">Nolotiro</string>
     <string name="hello_world">Hello world!</string>
+    <string name="change_location">Change location</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_settings">Settings</string>
-
     <string name="wants">Wants</string>
     <string name="gives">Gives</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="type_location">Type your location here</string>
+    <string name="choose_location">Choose your \"%1$s\"</string>
+    <string name="add_new">Add new</string>
+
+    <string-array name="example_cities">
+        <item>Málaga</item>
+        <item>Madrid</item>
+        <item>Fuengirola</item>
+    </string-array>
 
 </resources>
