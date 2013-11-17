@@ -35,6 +35,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.alabs.nolotiro.MainActivity" />
         </activity>
+        <activity
+            android:name="org.alabs.nolotiro.AdViewActivity"
+            android:label="@string/title_activity_ad_view" >
+        </activity>
     </application>
 
 </manifest>
