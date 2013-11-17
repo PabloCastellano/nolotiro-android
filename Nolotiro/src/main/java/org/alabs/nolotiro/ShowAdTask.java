@@ -1,5 +1,6 @@
 package org.alabs.nolotiro;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,6 +38,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
     private Fragment fragment;
     private Context context;
     private NolotiroAPI nolotiro;
+    private ProgressDialog progressDialog;
 
     public ShowAdTask(Fragment _fragment) {
         nolotiro = NolotiroAPI.getInstance();
@@ -45,7 +47,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
     }
 
     protected void onPreExecute() {
-
+        progressDialog = ProgressDialog.show(fragment.getActivity(), "Please wait", "Fetching Ad from Nolotiro.org", true);
     }
 
     protected  void onPostExecute(final AdWithBitmap ad) {
@@ -60,6 +62,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
                 image.setImageBitmap(ad.getBitmap());
             }
         });
+        progressDialog.dismiss();
     }
 
     protected AdWithBitmap doInBackground(Integer... itemIds) {
