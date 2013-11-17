@@ -13,7 +13,9 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NolotiroAPI {
 
@@ -23,17 +25,14 @@ public class NolotiroAPI {
     private static final String AD_API_ENDPOINT = "/ad/%d/api.json";
     private static final String AD_PHOTO_API_ENDPOINT = "/images/uploads/ads/original/%s";
 
+    private Map<Integer, Ad> cache;
+
     private int woeId;
     private String langId = "es";
 
     private NolotiroAPI() {
+        cache = new HashMap<Integer, Ad>();
         INIT_API_CREDENTIALS();
-    }
-
-    private NolotiroAPI (int woeid, String langid) {
-        INIT_API_CREDENTIALS();
-        this.woeId = woeid;
-        this.langId = langid;
     }
 
     public static NolotiroAPI getInstance() {
@@ -44,6 +43,10 @@ public class NolotiroAPI {
     }
 
     public Ad getAd(int id) {
+
+        if(cache.containsKey(id)) {
+            return cache.get(id);
+        }
 
         Ad ad = null;
 
@@ -58,6 +61,8 @@ public class NolotiroAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        cache.put(id, ad);
 
         return ad;
     }
@@ -85,6 +90,7 @@ public class NolotiroAPI {
         HttpURLConnection urlConnection = (HttpURLConnection) requestURL.openConnection();
         urlConnection.setDoOutput(false);
         urlConnection.setRequestMethod("GET");
+        JSONObject responseJSON;
         String response = "";
 
         try {
