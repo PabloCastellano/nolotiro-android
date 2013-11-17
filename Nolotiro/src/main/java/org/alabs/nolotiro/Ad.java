@@ -4,13 +4,18 @@ import java.io.Serializable;
 
 public class Ad implements Serializable {
 
+    public static final class Type {
+        public static final int GIVE = 0x1;
+        public static final int WANT = 0x2;
+    }
+
     public static final String KEY = "AD";
 
     private int id;
     private String title;
     private String body;
     private String username;
-    private int type; // =1
+    private Ad.Type type;
     private int woeid;
     private String date_created;
     private String photo;
@@ -53,11 +58,11 @@ public class Ad implements Serializable {
         this.username = username;
     }
 
-    public int getType() {
+    public Ad.Type getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(Ad.Type type) {
         this.type = type;
     }
 
