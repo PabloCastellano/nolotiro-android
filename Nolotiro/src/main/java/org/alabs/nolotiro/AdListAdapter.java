@@ -22,8 +22,10 @@ public class AdListAdapter extends ArrayAdapter<Ad> {
         View rowView = inflater.inflate(R.layout.fragment_main, null);
         Ad ad = getItem(position);
 
-        TextView textView = (TextView) rowView.findViewById(R.id.ad_title_text);
-        textView.setText(ad.getTitle());
+        if(ad != null) {
+            TextView textView = (TextView) rowView.findViewById(R.id.ad_title_text);
+            textView.setText(ad.getTitle());
+        }
 
         return rowView;
 
