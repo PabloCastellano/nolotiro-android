@@ -18,8 +18,10 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     private ProgressDialog progress;
     private ListFragment fragment;
     private Context context;
+    private NolotiroAPI nolotiro;
 
-    public UpdateAdsTask(ListFragment _fragment) {
+    public UpdateAdsTask(NolotiroAPI api, ListFragment _fragment) {
+        nolotiro = api;
         context = _fragment.getActivity();
         fragment = _fragment;
         //progress = new ProgressDialog(context);
@@ -55,12 +57,10 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
 
     protected List<Ad> doInBackground(Integer... woeids) {
         Integer woeid = woeids[0];
-        List<Ad> ads = new ArrayList<Ad>();
-
-        // TODO: Call API
+        List<Ad> ads = nolotiro.getGives(0);
 
         // Meanwhile...
-        Ad ad = new Ad();
+/*        Ad ad = new Ad();
         ad.setId(1);
         ad.setTitle("Gameboy");
         ad.setBody("My super gameboy is nice!");
@@ -70,7 +70,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         ad.setId(2);
         ad.setTitle("Motor ACME");
         ad.setBody("Vendo este super motor!");
-        ads.add(ad);
+        ads.add(ad);*/
 
         //if (isCancelled()) break;
 
