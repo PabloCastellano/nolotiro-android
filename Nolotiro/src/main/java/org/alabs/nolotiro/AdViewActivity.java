@@ -1,6 +1,8 @@
 package org.alabs.nolotiro;
 
+import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -11,10 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ImageButton;
 
 public class AdViewActivity extends ActionBarActivity {
 
-    NolotiroAPI nolotiro;
+    private NolotiroAPI nolotiro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +33,6 @@ public class AdViewActivity extends ActionBarActivity {
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
