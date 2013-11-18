@@ -1,4 +1,4 @@
-package org.alabs.nolotiro.dialogs;
+package org.alabs.nolotiro.exceptions;
 
 /**
  * Created by zero on 11/17/13.
