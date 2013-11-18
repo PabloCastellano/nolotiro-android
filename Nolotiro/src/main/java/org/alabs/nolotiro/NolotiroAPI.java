@@ -1,5 +1,6 @@
 package org.alabs.nolotiro;
 
+import org.alabs.nolotiro.exceptions.AdStatusException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +23,7 @@ public class NolotiroAPI {
     private static final NolotiroAPI INSTANCE = new NolotiroAPI();
 
     private static final String BASE_API_ENDPOINT = "http://beta.nolotiro.org/%s";
+    private static final String BASE_API_ENDPOINT_OLD = "http://nolotiro.org";
     private static final String AD_API_ENDPOINT = "/ad/%d/api.json";
     private static final String AD_PHOTO_API_ENDPOINT = "/images/uploads/ads/original/%s";
 
@@ -43,7 +45,6 @@ public class NolotiroAPI {
     }
 
     public Ad getAd(int id) {
-
         if(cache.containsKey(id)) {
             return cache.get(id);
         }
@@ -54,7 +55,6 @@ public class NolotiroAPI {
         try {
             JSONObject adJSON = makeRequest(requestURL);
             ad = jsonToAd(adJSON);
-
             ad.setId(id);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -68,7 +68,6 @@ public class NolotiroAPI {
     }
 
     public List<Ad> getWants(int offset) {
-
         //TODO: Implement when rest api is complete
         return null;
     }
@@ -85,12 +84,10 @@ public class NolotiroAPI {
     }
 
     private JSONObject makeRequest(String url) throws IOException, JSONException {
-
         URL requestURL = new URL(url);
         HttpURLConnection urlConnection = (HttpURLConnection) requestURL.openConnection();
         urlConnection.setDoOutput(false);
         urlConnection.setRequestMethod("GET");
-        JSONObject responseJSON;
         String response = "";
 
         try {
@@ -122,32 +119,26 @@ public class NolotiroAPI {
     }
 
     private Ad jsonToAd(JSONObject json) {
-
         Ad ad = new Ad();
-
-        String title = "", body = "", username = "", status = "", photo = "";
-        int woeid = -1;
 
         try {
             //TODO: Catch exceptions individually
-            title = json.getString("title");
-            body = json.getString("body");
-            username = json.getString("user_owner");
-            status = json.getString("status");
-            photo = String.format("http://nolotiro.org/images/uploads/ads/original/%s", json.getString("image_file_name"));
-            woeid = json.getInt("woeid_code");
-
+            ad.setTitle(json.getString("title"));
+            ad.setBody(json.getString("body"));
+            ad.setUsername(json.getString("user_owner"));
+            ad.setStatus(Ad.Status.fromString(json.getString("status")));
+            ad.setImageFilename(json.getString("image_file_name"));
+            ad.setWoeid(json.getInt("woeid_code"));
         } catch (JSONException e) {
-
+            e.printStackTrace();
+        } catch (AdStatusException e) {
+            e.printStackTrace();
         }
 
-        ad.setBody(body);
-        ad.setTitle(title);
-        ad.setUsername(username);
-        ad.setStatus(status);
-        ad.setPhoto(photo);
-        ad.setWoeid(woeid);
-
         return ad;
+    }
+
+    public String getPhotoUrlFromAd(Ad ad) {
+        return String.format(BASE_API_ENDPOINT_OLD + AD_PHOTO_API_ENDPOINT, ad.getImageFilename());
     }
 }
