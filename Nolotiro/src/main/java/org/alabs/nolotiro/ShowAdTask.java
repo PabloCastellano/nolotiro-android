@@ -35,11 +35,9 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
         public Ad getAd() {
             return ad;
         }
-
         public Bitmap getBitmap() {
             return bitmap;
         }
-
     }
 
     private static final String TAG = "ShowAdTask";
@@ -72,6 +70,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
                 image.setImageBitmap(ad.getBitmap());
             }
         });
+        fragment.getActivity().setTitle(ad.getAd().getTitle());
         progressDialog.dismiss();
     }
 
@@ -81,8 +80,15 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
         Bitmap bitmap = null;
 
         try {
-            File f = new File(Utils.getNolotiroCacheDir(context) + ad.getImageFilename());
-            Log.i("AdTask", f.toString());
+            String nolotiroDir = Utils.getNolotiroCacheDir(context);
+            File f = new File(nolotiroDir);
+            if (!f.exists()) {
+                Log.i(TAG, "Mkdir " + f);
+                f.mkdirs();
+            }
+
+            f = new File(nolotiroDir + ad.getImageFilename());
+            Log.i("ShowAdTask", f.toString());
 
             if (f.exists()) {
                 bitmap = BitmapFactory.decodeFile(f.toString());
