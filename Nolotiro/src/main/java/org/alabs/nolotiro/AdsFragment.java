@@ -2,15 +2,15 @@ package org.alabs.nolotiro;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
+
 
 public class AdsFragment extends ListFragment {
 
+    private static final String TAG = "AdsFragment";
     private static final Integer DEFAULT_WOEID = 766356;
     private NolotiroAPI nolotiro;
 
@@ -20,11 +20,11 @@ public class AdsFragment extends ListFragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        refreshAds();
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        refreshAds();
         // TODO: Restore position
     }
 
@@ -35,7 +35,8 @@ public class AdsFragment extends ListFragment {
 
     public void onListItemClick(ListView listView, View view, int position, long id) {
         Ad ad = (Ad) listView.getAdapter().getItem(position);
-        Log.i("Nolotiro", "Click on " + ad.getTitle());
+        Log.i(TAG, "Clicked on " + ad.getTitle());
+
         startActivity(new Intent(getActivity(), AdViewActivity.class).putExtra("id", ad.getId()));
     }
 
