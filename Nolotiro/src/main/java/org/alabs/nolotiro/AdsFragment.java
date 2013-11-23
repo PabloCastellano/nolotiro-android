@@ -42,6 +42,6 @@ public class AdsFragment extends ListFragment {
 
     public void refreshAds() {
         UpdateAdsTask updateTask = new UpdateAdsTask(nolotiro, this);
-        updateTask.execute(DEFAULT_WOEID);
+        updateTask.execute(1);
     }
 }

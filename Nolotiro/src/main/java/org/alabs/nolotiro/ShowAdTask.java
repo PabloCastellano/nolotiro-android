@@ -48,6 +48,8 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
+                if(bitmap != null)
+                    image.setImageBitmap(bitmap);
             }
         });
     }
@@ -62,6 +64,8 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
         title.setText(ad.getTitle());
         description.setText(ad.getBody());
         fragment.getActivity().setTitle(ad.getTitle());
+        if(ad.getImageFilename() == null)
+            return null;
 
         try {
             String nolotiroDir = Utils.getNolotiroCacheDir(context);
@@ -78,9 +82,13 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                 bitmap = BitmapFactory.decodeFile(f.toString());
             } else {
                 URL url = new URL(api.getPhotoUrlFromAd(ad));
+                Log.i("Nolotiro", "Downloading image file " + url.toString());
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
                 bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
+                if(bitmap == null) {
+                    Log.e("Nolotiro", "Bitmap es null");
+                }
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
 
                 f.createNewFile();
