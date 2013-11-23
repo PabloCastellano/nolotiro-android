@@ -56,14 +56,19 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
 
     protected Bitmap doInBackground(Integer... itemIds) {
         Integer itemId = itemIds[0];
-        Ad ad = api.getAd(itemId);
+        final Ad ad = api.getAd(itemId);
         Bitmap bitmap = null;
 
-        TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
-        TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
-        title.setText(ad.getTitle());
-        description.setText(ad.getBody());
-        fragment.getActivity().setTitle(ad.getTitle());
+        fragment.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
+                TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
+                title.setText(ad.getTitle());
+                description.setText(ad.getBody());
+                fragment.getActivity().setTitle(ad.getTitle());
+            }
+        });
+
         if(ad.getImageFilename() == null)
             return null;
 
