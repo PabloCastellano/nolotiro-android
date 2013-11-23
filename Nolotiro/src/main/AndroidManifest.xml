@@ -24,7 +24,6 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -38,7 +37,19 @@
         </activity>
         <activity
             android:name="org.alabs.nolotiro.AdViewActivity"
-            android:label="@string/title_activity_ad_view" >
+            android:label="@string/title_activity_ad_view"
+            android:parentActivityName="org.alabs.nolotiro.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.alabs.nolotiro.MainActivity" />
+        </activity>
+        <activity
+            android:name="org.alabs.nolotiro.CreateAdActivity"
+            android:label="@string/create_new_ad_in"
+            android:parentActivityName="org.alabs.nolotiro.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.alabs.nolotiro.MainActivity" />
         </activity>
     </application>
 

@@ -1,6 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/create_ad"
+        android:title="@string/create_new_ad"
+        android:icon="@drawable/ic_device_access_camera"
+        android:orderInCategory="97"
+        app:showAsAction="ifRoom" />
+
     <item android:id="@+id/action_location"
         android:title="@string/change_location"
         android:icon="@drawable/ic_location_place"

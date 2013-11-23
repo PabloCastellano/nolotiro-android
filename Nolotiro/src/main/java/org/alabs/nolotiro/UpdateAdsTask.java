@@ -1,12 +1,10 @@
 package org.alabs.nolotiro;
 
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // This task retrieves ads and updates the ListView
@@ -33,6 +31,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     }
 
     protected  void onPostExecute(final List<Ad> ads) {
+
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
 

@@ -1,6 +1,5 @@
 package org.alabs.nolotiro;
 
-import org.alabs.nolotiro.exceptions.AdStatusException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,10 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class NolotiroAPI {
 
     private static final NolotiroAPI INSTANCE = new NolotiroAPI();
 
+    private static final String TAG = "NolotiroAPI";
     private static final String BASE_API_ENDPOINT = "http://beta.nolotiro.org/%s";
     private static final String BASE_API_ENDPOINT_OLD = "http://nolotiro.org";
     private static final String AD_API_ENDPOINT = "/ad/%d/api.json";
@@ -122,16 +123,13 @@ public class NolotiroAPI {
         Ad ad = new Ad();
 
         try {
-            //TODO: Catch exceptions individually
             ad.setTitle(json.getString("title"));
             ad.setBody(json.getString("body"));
             ad.setUsername(json.getString("user_owner"));
-            ad.setStatus(Ad.Status.fromString(json.getString("status")));
+            ad.setStatus(Ad.Status.valueOf(json.getString("status").toUpperCase()));
             ad.setImageFilename(json.getString("image_file_name"));
             ad.setWoeid(json.getInt("woeid_code"));
         } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (AdStatusException e) {
             e.printStackTrace();
         }
 

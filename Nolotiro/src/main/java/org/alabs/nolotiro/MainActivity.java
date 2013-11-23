@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.util.Log;
 
 import android.support.v7.app.ActionBar.Tab;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import org.alabs.nolotiro.dialogs.ChangeLocationDialogFragment;
@@ -27,10 +26,12 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
     private static final String GIVES_TAG = "gives";
     private static final String WANTS_TAG = "wants";
     private ActionBar actionBar;
+    private Woeid currentWoeid;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        currentWoeid = new Woeid(1, "Málaga", "Andalusia", "Spain");
         actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -56,6 +57,11 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
+            case R.id.create_ad:
+                intent = new Intent(this, CreateAdActivity.class);
+                intent.putExtra("location", currentWoeid.getName());
+                startActivity(intent);
+                return true;
             case R.id.action_location:
                 showChangeLocationDialog();
                 return true;
