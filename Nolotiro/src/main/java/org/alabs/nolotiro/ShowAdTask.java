@@ -6,14 +6,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.alabs.nolotiro.exceptions.NolotiroException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+// This task checks if the Ad photo is available in cache and downloads it if necessary
 public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap> {
 
     public class AdWithBitmap {
@@ -35,19 +42,22 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
 
     }
 
+    private static final String TAG = "ShowAdTask";
     private Fragment fragment;
     private Context context;
-    private NolotiroAPI nolotiro;
+    private NolotiroAPI api;
     private ProgressDialog progressDialog;
 
     public ShowAdTask(Fragment _fragment) {
-        nolotiro = NolotiroAPI.getInstance();
+        api = NolotiroAPI.getInstance();
         context = _fragment.getActivity();
         fragment = _fragment;
     }
 
     protected void onPreExecute() {
-        progressDialog = ProgressDialog.show(fragment.getActivity(), "Please wait", "Fetching Ad from Nolotiro.org", true);
+        String title = context.getResources().getString(R.string.please_wait);
+        String message = context.getResources().getString(R.string.fetching_ad);
+        progressDialog = ProgressDialog.show(fragment.getActivity(), title, message, true);
     }
 
     protected  void onPostExecute(final AdWithBitmap ad) {
@@ -67,11 +77,30 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
 
     protected AdWithBitmap doInBackground(Integer... itemIds) {
         Integer itemId = itemIds[0];
-        Ad ad = nolotiro.getAd(itemId);
+        Ad ad = api.getAd(itemId);
         Bitmap bitmap = null;
 
         try {
-            bitmap = BitmapFactory.decodeStream((InputStream) new URL(ad.getPhoto()).getContent());
+            File f = new File(Utils.getNolotiroCacheDir(context) + ad.getImageFilename());
+            Log.i("AdTask", f.toString());
+
+            if (f.exists()) {
+                bitmap = BitmapFactory.decodeFile(f.toString());
+            } else {
+                URL url = new URL(api.getPhotoUrlFromAd(ad));
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+                bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+
+                f.createNewFile();
+                FileOutputStream fo = new FileOutputStream(f.getAbsoluteFile());
+                fo.write(bytes.toByteArray());
+                fo.close();
+                Log.i(TAG, "File saved to: " + f.getAbsolutePath());
+            }
+        } catch (NolotiroException e) {
+            e.printStackTrace();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
