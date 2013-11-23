@@ -54,30 +54,9 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         //progress.dismiss();
     }
 
-    protected List<Ad> doInBackground(Integer... woeids) {
-        Integer woeid = woeids[0];
-        List<Ad> ads = nolotiro.getGives(0);
-
-        // Meanwhile...
-/*        Ad ad = new Ad();
-        ad.setId(1);
-        ad.setTitle("Gameboy");
-        ad.setBody("My super gameboy is nice!");
-        ads.add(ad);
-
-        ad = new Ad();
-        ad.setId(2);
-        ad.setTitle("Motor ACME");
-        ad.setBody("Vendo este super motor!");
-        ads.add(ad);*/
-
-        //if (isCancelled()) break;
-
-        try {
-            Thread.sleep(2000);
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
+    protected List<Ad> doInBackground(Integer... pages) {
+        //TODO: get woeid from preferences
+        List<Ad> ads = nolotiro.getGives(pages[0], 766273);
 
         return ads;
     }
