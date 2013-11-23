@@ -1,13 +1,14 @@
 package org.alabs.nolotiro;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.alabs.nolotiro.exceptions.NolotiroException;
@@ -21,30 +22,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 // This task checks if the Ad photo is available in cache and downloads it if necessary
-public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap> {
-
-    public class AdWithBitmap {
-        Ad ad;
-        Bitmap bitmap;
-
-        public AdWithBitmap(Ad ad, Bitmap bitmap) {
-            this.ad = ad;
-            this.bitmap = bitmap;
-        }
-
-        public Ad getAd() {
-            return ad;
-        }
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-    }
+public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
 
     private static final String TAG = "ShowAdTask";
     private Fragment fragment;
     private Context context;
     private NolotiroAPI api;
-    private ProgressDialog progressDialog;
+    private ImageView image;
 
     public ShowAdTask(Fragment _fragment) {
         api = NolotiroAPI.getInstance();
@@ -53,31 +37,31 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
     }
 
     protected void onPreExecute() {
-        String title = context.getResources().getString(R.string.please_wait);
-        String message = context.getResources().getString(R.string.fetching_ad);
-        progressDialog = ProgressDialog.show(fragment.getActivity(), title, message, true);
+        image = (ImageView)fragment.getActivity().findViewById(R.id.imageImage);
+        image.setVisibility(View.INVISIBLE);
     }
 
-    protected  void onPostExecute(final AdWithBitmap ad) {
+    protected void onPostExecute(final Bitmap bitmap) {
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
-                TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
-                TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
-                ImageView image = (ImageView)fragment.getActivity().findViewById(R.id.imageImage);
-
-                title.setText(ad.getAd().getTitle());
-                description.setText(ad.getAd().getBody());
-                image.setImageBitmap(ad.getBitmap());
+                ProgressBar progress = (ProgressBar)fragment.getActivity().findViewById(R.id.progressBar);
+                image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
             }
         });
-        fragment.getActivity().setTitle(ad.getAd().getTitle());
-        progressDialog.dismiss();
     }
 
-    protected AdWithBitmap doInBackground(Integer... itemIds) {
+    protected Bitmap doInBackground(Integer... itemIds) {
         Integer itemId = itemIds[0];
         Ad ad = api.getAd(itemId);
         Bitmap bitmap = null;
+
+        TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
+        TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
+        title.setText(ad.getTitle());
+        description.setText(ad.getBody());
+        fragment.getActivity().setTitle(ad.getTitle());
 
         try {
             String nolotiroDir = Utils.getNolotiroCacheDir(context);
@@ -113,6 +97,6 @@ public class ShowAdTask extends AsyncTask<Integer, Void, ShowAdTask.AdWithBitmap
             e.printStackTrace();
         }
 
-        return new AdWithBitmap(ad, bitmap);
+        return bitmap;
     }
 }

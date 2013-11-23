@@ -16,8 +16,6 @@
     <string name="create_new_ad">Create new ad</string>
     <string name="create_new_ad_in">Create new ad in %1$s</string>
     <string name="title_activity_ad_view">Ad</string>
-    <string name="please_wait">Please wait</string>
-    <string name="fetching_ad">Fetching Ad from Nolotiro.org</string>
 
     <string-array name="example_cities">
         <item>Málaga</item>
