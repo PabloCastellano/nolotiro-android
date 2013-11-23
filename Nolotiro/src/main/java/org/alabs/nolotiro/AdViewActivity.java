@@ -14,6 +14,7 @@ import android.os.Build;
 
 public class AdViewActivity extends ActionBarActivity {
 
+    private static final String TAG = "AdViewActivity";
     private NolotiroAPI nolotiro;
 
     @Override
@@ -22,7 +23,7 @@ public class AdViewActivity extends ActionBarActivity {
         setContentView(R.layout.activity_ad_view);
         int id = getIntent().getIntExtra("id", 0);
 
-        Log.i("Nolotiro", "Created new activity to show item " + id);
+        Log.i(TAG, "Created new activity to show item " + id);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -51,9 +52,6 @@ public class AdViewActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class AdViewFragment extends Fragment {
 
         int itemId;
@@ -64,6 +62,10 @@ public class AdViewActivity extends ActionBarActivity {
 
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+        }
+
+        public void onViewCreated(View view, Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
             loadItemData(itemId);
         }
 
