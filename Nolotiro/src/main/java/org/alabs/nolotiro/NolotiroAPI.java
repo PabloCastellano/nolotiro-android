@@ -1,5 +1,6 @@
 package org.alabs.nolotiro;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,15 +23,14 @@ public class NolotiroAPI {
 
     private static final NolotiroAPI INSTANCE = new NolotiroAPI();
 
-    private static final String TAG = "NolotiroAPI";
-    private static final String BASE_API_ENDPOINT = "http://beta.nolotiro.org/%s";
+    private static final String BASE_API_ENDPOINT = "http://beta.nolotiro.org";
     private static final String BASE_API_ENDPOINT_OLD = "http://nolotiro.org";
     private static final String AD_API_ENDPOINT = "/ad/%d/api.json";
     private static final String AD_PHOTO_API_ENDPOINT = "/images/uploads/ads/original/%s";
+    private static final String GIVE_LIST_BY_WOEID_ENDPOINT = "/api/v1/woeid/%d/give";
 
     private Map<Integer, Ad> cache;
 
-    private int woeId;
     private String langId = "es";
 
     private NolotiroAPI() {
@@ -73,13 +73,20 @@ public class NolotiroAPI {
         return null;
     }
 
-    public List<Ad> getGives(int offset) {
-        //TODO: Implement when rest api is complete
+    public List<Ad> getGives(int offset, int woeId) {
 
+        String requestURL = String.format(BASE_API_ENDPOINT + GIVE_LIST_BY_WOEID_ENDPOINT, woeId);
         List<Ad> ads = new ArrayList<Ad>();
-        ads.add(getAd(153841));
-        ads.add(getAd(153840));
-        ads.add(getAd(153839));
+
+        try {
+            JSONObject response = makeRequest(requestURL);
+            JSONArray adsJSON = new JSONArray(response.getString("ads"));
+            for(int i = 0; i < adsJSON.length(); i++) {
+                ads.add(jsonToAd(adsJSON.getJSONObject(i)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return ads;
     }
@@ -123,13 +130,16 @@ public class NolotiroAPI {
         Ad ad = new Ad();
 
         try {
-            ad.setTitle(json.getString("title"));
-            ad.setBody(json.getString("body"));
-            ad.setUsername(json.getString("user_owner"));
-            ad.setStatus(Ad.Status.valueOf(json.getString("status").toUpperCase()));
-            ad.setImageFilename(json.getString("image_file_name"));
-            ad.setWoeid(json.getInt("woeid_code"));
+            if (json.has("id")) { ad.setId(Integer.valueOf(json.getString("id"))); }
+            if (json.has("title")) { ad.setTitle(json.getString("title")); }
+            if (json.has("body")) { ad.setBody(json.getString("body")); }
+            if (json.has("user_owner")) { ad.setUsername(json.getString("user_owner")); }
+            if (json.has("status")) { ad.setStatus(Ad.Status.valueOf(json.getString("status"))); }
+            if (json.has("image_file_name")) { ad.setImageFilename(json.getString("image_file_name")); }
+            if (json.has("woeid_code")) { ad.setWoeid(json.getInt("woeid_code")); }
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
 
