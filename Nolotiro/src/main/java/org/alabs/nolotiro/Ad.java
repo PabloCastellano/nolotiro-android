@@ -1,64 +1,23 @@
 package org.alabs.nolotiro;
 
-import android.util.Log;
-
-import org.alabs.nolotiro.exceptions.AdStatusException;
-import org.alabs.nolotiro.exceptions.AdTypeException;
-
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Ad implements Serializable {
 
-    public static final class Type {
-        public static final int GIVE = 0x0;
-        public static final int WANT = 0x1;
-
-        public static final int fromString(String str) throws AdTypeException {
-            if (str.toLowerCase().equals("busco")) {
-                return Ad.Type.WANT;
-            } else if (str.toLowerCase().equals("regalo")) {
-                return Ad.Type.GIVE;
-            } else {
-                throw new AdTypeException("Invalid Ad.Type value: " + str);
-            }
-        }
-    }
-
-    public static final class Status {
-        public static final int AVAILABLE = 0x0;
-        public static final int BOOKED = 0x1;
-        public static final int DELIVERED = 0x2;
-
-        public static final int fromString(String str) throws AdStatusException {
-            if (str.toLowerCase().equals("available")) {
-                return Ad.Status.AVAILABLE;
-            } else if (str.toLowerCase().equals("booked")) {
-                return Ad.Status.BOOKED;
-            } else if (str.toLowerCase().equals("____")) {
-                return Ad.Status.DELIVERED;
-            } else {
-                throw new AdStatusException("Invalid Ad.Status value: " + str);
-            }
-        }
-    }
-
-    public static final String KEY = "AD";
+    public static enum Type { GIVE, WANT };
+    public static enum Status { AVAILABLE, BOOKED, DELIVERED };
 
     private int id;
     private String title;
     private String body;
     private String username;
-    private int type;
+    private Ad.Type type;
     private int woeid;
-    //private Date date_created;
     private String date_created;
     private String image_file_name;
-    private int status;
+    private Ad.Status status;
     private boolean comments_enabled;
-    
+
     public Ad() {
 
     }
@@ -95,14 +54,11 @@ public class Ad implements Serializable {
         this.username = username;
     }
 
-    public int getType() {
+    public Ad.Type getType() {
         return type;
     }
 
-    public void setType(int type) throws AdTypeException {
-        if (type != Type.GIVE && type != Type.WANT) {
-            throw new AdTypeException("Invalid Ad.Type value: " + type);
-        }
+    public void setType(Ad.Type type) {
         this.type = type;
     }
 
@@ -113,16 +69,6 @@ public class Ad implements Serializable {
     public void setWoeid(int woeid) {
         this.woeid = woeid;
     }
-
-    /*
-    public Date getDate() {
-        return date_created;
-    }
-
-    public void setDate(Date date_created) {
-        this.date_created = date_created;
-    }
-    */
 
     public String getDate() {
         return date_created;
@@ -141,14 +87,11 @@ public class Ad implements Serializable {
         this.image_file_name = image_file_name;
     }
 
-    public int getStatus() {
+    public Ad.Status getStatus() {
         return status;
     }
 
-    public void setStatus(int status) throws AdStatusException {
-        if (status != Status.AVAILABLE && status != Status.BOOKED && status != Status.DELIVERED) {
-            throw new AdStatusException("Invalid Ad.Status value: " + type);
-        }
+    public void setStatus(Ad.Status status) {
         this.status = status;
     }
 
