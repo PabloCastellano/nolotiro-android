@@ -1,6 +1,8 @@
 package org.alabs.nolotiro;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ImageView;
 
 public class AdViewActivity extends ActionBarActivity {
 
@@ -67,6 +70,16 @@ public class AdViewActivity extends ActionBarActivity {
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             loadItemData(itemId);
+            ImageView image = (ImageView) this.getActivity().findViewById(R.id.imageImage);
+            image.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.parse("file://" + v.getTag()), "image/*");
+                    startActivity(intent);
+                }
+            });
+
         }
 
         private void loadItemData(int id) {

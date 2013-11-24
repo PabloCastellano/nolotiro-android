@@ -48,8 +48,9 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
-                if(bitmap != null)
+                if(bitmap != null) {
                     image.setImageBitmap(bitmap);
+                }
             }
         });
     }
@@ -58,6 +59,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
         Integer itemId = itemIds[0];
         final Ad ad = api.getAd(itemId);
         Bitmap bitmap = null;
+        File f = null;
 
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
@@ -74,7 +76,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
 
         try {
             String nolotiroDir = Utils.getNolotiroCacheDir(context);
-            File f = new File(nolotiroDir);
+            f = new File(nolotiroDir);
             if (!f.exists()) {
                 Log.i(TAG, "Mkdir " + f);
                 f.mkdirs();
@@ -109,6 +111,8 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        image.setTag(f.getAbsolutePath());
 
         return bitmap;
     }
