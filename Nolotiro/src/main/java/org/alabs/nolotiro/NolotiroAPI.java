@@ -45,7 +45,7 @@ public class NolotiroAPI {
     private void INIT_API_CREDENTIALS() {
     }
 
-    public Ad getAd(int id) {
+    public Ad getAd(int id) throws JSONException, IOException {
         if(cache.containsKey(id)) {
             return cache.get(id);
         }
@@ -53,15 +53,9 @@ public class NolotiroAPI {
         Ad ad = null;
 
         String requestURL = String.format(BASE_API_ENDPOINT + AD_API_ENDPOINT, id);
-        try {
-            JSONObject adJSON = makeRequest(requestURL);
-            ad = jsonToAd(adJSON);
-            ad.setId(id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        JSONObject adJSON = makeRequest(requestURL);
+        ad = jsonToAd(adJSON);
+        ad.setId(id);
 
         cache.put(id, ad);
 
@@ -73,19 +67,14 @@ public class NolotiroAPI {
         return null;
     }
 
-    public List<Ad> getGives(int offset, int woeId) {
-
+    public List<Ad> getGives(int offset, int woeId) throws IOException, JSONException {
         String requestURL = String.format(BASE_API_ENDPOINT + GIVE_LIST_BY_WOEID_AND_PAGE_ENDPOINT, woeId, offset);
         List<Ad> ads = new ArrayList<Ad>();
 
-        try {
-            JSONObject response = makeRequest(requestURL);
-            JSONArray adsJSON = new JSONArray(response.getString("ads"));
-            for(int i = 0; i < adsJSON.length(); i++) {
-                ads.add(jsonToAd(adsJSON.getJSONObject(i)));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        JSONObject response = makeRequest(requestURL);
+        JSONArray adsJSON = new JSONArray(response.getString("ads"));
+        for(int i = 0; i < adsJSON.length(); i++) {
+            ads.add(jsonToAd(adsJSON.getJSONObject(i)));
         }
 
         return ads;
