@@ -18,7 +18,6 @@ import android.widget.ImageView;
 public class AdViewActivity extends ActionBarActivity {
 
     private static final String TAG = "AdViewActivity";
-    private NolotiroAPI nolotiro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +58,7 @@ public class AdViewActivity extends ActionBarActivity {
 
         int itemId;
 
+        // TODO: Pass whole Ad instead of just its id
         public AdViewFragment(int id) {
             itemId = id;
         }

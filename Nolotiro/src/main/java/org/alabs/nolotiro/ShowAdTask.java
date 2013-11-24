@@ -10,8 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.alabs.nolotiro.exceptions.NolotiroException;
+import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,6 +31,8 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
     private Context context;
     private NolotiroAPI api;
     private ImageView image;
+    private Integer itemId = 0;
+    private Exception exception = null;
 
     public ShowAdTask(Fragment _fragment) {
         api = NolotiroAPI.getInstance();
@@ -42,32 +46,63 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
     }
 
     protected void onPostExecute(final Bitmap bitmap) {
+        String message = null;
+
+        // Handle doInBackground exception
+        if (exception != null) {
+            exception.printStackTrace();
+
+            if (exception instanceof IOException) {
+                message = context.getResources().getString(R.string.error_connecting);
+            } else if (exception instanceof JSONException) {
+                message = context.getResources().getString(R.string.error_retrieving_ad);
+            }
+            Log.e(TAG, message);
+        }
+        final String finalMessage = message;
+
+        // Set image and hide progress animation
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 ProgressBar progress = (ProgressBar)fragment.getActivity().findViewById(R.id.progressBar);
-                image.setImageBitmap(bitmap);
-                image.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
                 if(bitmap != null) {
+                    image.setVisibility(View.VISIBLE);
                     image.setImageBitmap(bitmap);
+                } else {
+                    if (exception != null) {
+                        Toast.makeText(context, finalMessage, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
     }
 
     protected Bitmap doInBackground(Integer... itemIds) {
-        Integer itemId = itemIds[0];
-        final Ad ad = api.getAd(itemId);
+        itemId = itemIds[0];
         Bitmap bitmap = null;
         File f = null;
+        Ad ad = null;
+        try {
+            ad = api.getAd(itemId);
+        } catch (Exception e) {
+            ad = null;
+            exception = e;
+        }
 
+        if (ad == null)
+            return null;
+
+        final Ad finalAd = ad;
+
+        // TODO: Retrieve from DB
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
                 TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
-                title.setText(ad.getTitle());
-                description.setText(ad.getBody());
-                fragment.getActivity().setTitle(ad.getTitle());
+                title.setText(finalAd.getTitle());
+                description.setText(finalAd.getBody());
+                fragment.getActivity().setTitle(finalAd.getTitle());
             }
         });
 
