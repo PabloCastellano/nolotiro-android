@@ -22,12 +22,12 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         nolotiro = api;
         context = _fragment.getActivity();
         fragment = _fragment;
-        //progress = new ProgressDialog(context);
-        //progress.setMessage("Loading...");
+        progress = new ProgressDialog(context);
+        progress.setMessage("Loading...");
     }
 
     protected void onPreExecute() {
-        //progress.show();
+        progress.show();
     }
 
     protected  void onPostExecute(final List<Ad> ads) {
@@ -35,23 +35,21 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
 
-                /*
-                if (ads == null) {
-                    Log.w(TAG, "onPostExecute: ads is null")
+                AdListAdapter adapter;
+                if(fragment.getListAdapter() == null) {
+                    adapter = new AdListAdapter(fragment.getActivity(), ads);
+                    fragment.setListAdapter(adapter);
+                } else {
+                    adapter = (AdListAdapter) fragment.getListAdapter();
+                    for(Ad ad : ads) {
+                        adapter.add(ad);
+                    }
                 }
-
-                for (Ad a : ads) {
-                    // TODO: cache images
-                }
-                */
-
-                AdListAdapter adapter = new AdListAdapter(fragment.getActivity(), ads);
-                fragment.setListAdapter(adapter);
                 adapter.notifyDataSetChanged();
 
             }
         });
-        //progress.dismiss();
+        progress.dismiss();
     }
 
     protected List<Ad> doInBackground(Integer... pages) {
