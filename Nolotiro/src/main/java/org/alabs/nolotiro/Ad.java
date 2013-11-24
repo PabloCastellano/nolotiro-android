@@ -7,6 +7,22 @@ public class Ad implements Serializable {
     public static enum Type { GIVE, WANT };
     public static enum Status { AVAILABLE, BOOKED, DELIVERED };
 
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", username='" + username + '\'' +
+                ", type=" + type +
+                ", woeid=" + woeid +
+                ", date_created='" + date_created + '\'' +
+                ", image_file_name='" + image_file_name + '\'' +
+                ", status=" + status +
+                ", comments_enabled=" + comments_enabled +
+                '}';
+    }
+
     private int id;
     private String title;
     private String body;
