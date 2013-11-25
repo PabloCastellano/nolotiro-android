@@ -43,7 +43,7 @@ public class AdsFragment extends ListFragment {
     }
 
     public void refreshAds() {
-        UpdateAdsTask updateTask = new UpdateAdsTask(nolotiro, this);
+        UpdateAdsTask updateTask = new UpdateAdsTask(this);
         updateTask.execute(1);
     }
 
@@ -75,7 +75,7 @@ public class AdsFragment extends ListFragment {
             if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                 // I load the next page of gigs using a background task,
                 // but you can call any function here.
-                new UpdateAdsTask(nolotiro, AdsFragment.this).execute(currentPage + 1);
+                new UpdateAdsTask(AdsFragment.this).execute(currentPage + 1);
                 loading = true;
             }
         }

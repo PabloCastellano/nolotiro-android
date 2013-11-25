@@ -24,12 +24,12 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     private ProgressDialog progress;
     private ListFragment fragment;
     private Context context;
-    private NolotiroAPI nolotiro;
+    private NolotiroAPI api;
     private Integer page = 1;
     private String errorMessage = null;
 
-    public UpdateAdsTask(NolotiroAPI api, ListFragment _fragment) {
-        nolotiro = api;
+    public UpdateAdsTask(ListFragment _fragment) {
+        api = NolotiroAPI.getInstance();
         context = _fragment.getActivity();
         fragment = _fragment;
         progress = new ProgressDialog(context);
@@ -86,7 +86,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         }
 
         try {
-            ads = nolotiro.getGives(page, 766273);
+            ads = api.getGives(page, 766273);
         } catch (IOException e) {
             errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
             ads = null;
