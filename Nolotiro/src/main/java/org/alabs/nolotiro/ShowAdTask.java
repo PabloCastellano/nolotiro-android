@@ -3,6 +3,8 @@ package org.alabs.nolotiro;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,7 +34,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
     private NolotiroAPI api;
     private ImageView image;
     private Integer itemId = 0;
-    private Exception exception = null;
+    private String errorMessage = null;
 
     public ShowAdTask(Fragment _fragment) {
         api = NolotiroAPI.getInstance();
@@ -46,20 +48,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
     }
 
     protected void onPostExecute(final Bitmap bitmap) {
-        String message = null;
-
-        // Handle doInBackground exception
-        if (exception != null) {
-            exception.printStackTrace();
-
-            if (exception instanceof IOException) {
-                message = context.getResources().getString(R.string.error_connecting);
-            } else if (exception instanceof JSONException) {
-                message = context.getResources().getString(R.string.error_retrieving_ad);
-            }
-            Log.e(TAG, message);
-        }
-        final String finalMessage = message;
+        final String finalMessage = errorMessage;
 
         // Set image and hide progress animation
         fragment.getActivity().runOnUiThread(new Runnable() {
@@ -70,9 +59,7 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                     image.setVisibility(View.VISIBLE);
                     image.setImageBitmap(bitmap);
                 } else {
-                    if (exception != null) {
-                        Toast.makeText(context, finalMessage, Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(context, finalMessage, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -83,14 +70,27 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
         Bitmap bitmap = null;
         File f = null;
         Ad ad = null;
-        try {
-            ad = api.getAd(itemId);
-        } catch (Exception e) {
-            ad = null;
-            exception = e;
+
+        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            errorMessage = context.getResources().getString(R.string.error_connecting);
+            return null;
         }
 
-        if (ad == null)
+        try {
+            ad = api.getAd(itemId);
+        } catch (IOException e) {
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
+            ad = null;
+        } catch (JSONException e) {
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
+            ad = null;
+        }
+
+        // Exception caught or no photo available
+        if (ad == null || ad.getImageFilename() == null)
             return null;
 
         final Ad finalAd = ad;
@@ -106,8 +106,14 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
             }
         });
 
-        if(ad.getImageFilename() == null)
-            return null;
+        return retrievePhoto(ad);
+    }
+
+    // Retrieve photo from cache dir if available. Otherwise download it.
+    private Bitmap retrievePhoto(Ad ad) {
+        File f = null;
+        Bitmap bitmap = null;
+        String photoPath = null;
 
         try {
             String nolotiroDir = Utils.getNolotiroCacheDir(context);
@@ -118,7 +124,6 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
             }
 
             f = new File(nolotiroDir + ad.getImageFilename());
-            Log.i("ShowAdTask", f.toString());
 
             if (f.exists()) {
                 bitmap = BitmapFactory.decodeFile(f.toString());
@@ -128,9 +133,6 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
                 bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
-                if(bitmap == null) {
-                    Log.e("Nolotiro", "Bitmap es null");
-                }
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
 
                 f.createNewFile();
@@ -139,6 +141,9 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                 fo.close();
                 Log.i(TAG, "File saved to: " + f.getAbsolutePath());
             }
+
+            photoPath = f.getAbsolutePath();
+
         } catch (NolotiroException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -147,8 +152,8 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
             e.printStackTrace();
         }
 
-        image.setTag(f.getAbsolutePath());
-
+        image.setTag(photoPath);
         return bitmap;
     }
+
 }

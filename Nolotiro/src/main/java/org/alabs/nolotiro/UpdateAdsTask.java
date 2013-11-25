@@ -2,6 +2,8 @@ package org.alabs.nolotiro;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -24,7 +26,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     private Context context;
     private NolotiroAPI nolotiro;
     private Integer page = 1;
-    private Exception exception = null;
+    private String errorMessage = null;
 
     public UpdateAdsTask(NolotiroAPI api, ListFragment _fragment) {
         nolotiro = api;
@@ -39,20 +41,11 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     }
 
     protected void onPostExecute(final List<Ad> ads) {
-        String message = null;
+        final String finalMessage = errorMessage;
 
-        // Handle doInBackground exception
-        if (exception != null) {
-            exception.printStackTrace();
-
-            if (exception instanceof IOException) {
-                message = context.getResources().getString(R.string.error_connecting);
-            } else if (exception instanceof JSONException) {
-                message = context.getResources().getString(R.string.error_retrieving_ads);
-            }
-            Log.e(TAG, message);
+        if (errorMessage != null) {
+            Log.e(TAG, errorMessage);
         }
-        final String finalMessage = message;
 
         // Set AdListAdapter and show Toast message if there was an exception
         fragment.getActivity().runOnUiThread(new Runnable() {
@@ -80,15 +73,26 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     }
 
     //TODO: get woeid from preferences
-    //TODO: It should check for internet connection first
     protected List<Ad> doInBackground(Integer... pages) {
         page = pages[0];
         List<Ad> ads = null;
+
+        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            errorMessage = context.getResources().getString(R.string.error_connecting);
+            return null;
+        }
+
         try {
             ads = nolotiro.getGives(page, 766273);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
             ads = null;
-            exception = e;
+        } catch (JSONException e) {
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
+            ads = null;
         }
 
         return ads;

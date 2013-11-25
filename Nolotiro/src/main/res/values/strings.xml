@@ -16,7 +16,7 @@
     <string name="create_new_ad">Create new ad</string>
     <string name="create_new_ad_in">Create new ad in %1$s</string>
     <string name="title_activity_ad_view">Ad</string>
-    <string name="error_connecting">There was an connecting to the server. Check hostname and your Internet connection</string>
+    <string name="error_connecting">There was an error connecting to the server. Please check hostname and your Internet connection</string>
     <string name="error_retrieving_ad">There was an error while retrieving this ad</string>
     <string name="error_retrieving_ads">There was an error while retrieving ads</string>
 
