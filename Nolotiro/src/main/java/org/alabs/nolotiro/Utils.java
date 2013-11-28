@@ -1,6 +1,8 @@
 package org.alabs.nolotiro;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 
@@ -12,6 +14,7 @@ import java.io.File;
 public class Utils {
 
     private static final String TAG = "NolotiroUtils";
+    public static final Integer DEBUG_WOEID = 766273;
     private static String NOLOTIRO_DIR = "Nolotiro";
 
     public static String getNolotiroCacheDir(Context ctx) throws NolotiroException {
@@ -57,6 +60,20 @@ public class Utils {
 
         dir += File.separator + NOLOTIRO_DIR + File.separator;
         return dir;
+    }
+
+
+    // Check for Internet connection
+    public static boolean isInternetAvailable(Context ctx)  {
+        ConnectivityManager connMgr = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if (networkInfo == null || !networkInfo.isConnected()) {
+            Log.w(TAG, "No networkinfo");
+            return false;
+        }
+
+        return true;
     }
 
 }

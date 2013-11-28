@@ -1,5 +1,7 @@
 package org.alabs.nolotiro;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ public class NolotiroAPI {
 
     private static final NolotiroAPI INSTANCE = new NolotiroAPI();
 
+    private static final String TAG = "NolotiroAPI";
     private static final String BASE_API_ENDPOINT = "http://beta.nolotiro.org";
     private static final String BASE_API_ENDPOINT_OLD = "http://nolotiro.org";
     private static final String AD_API_ENDPOINT = "/ad/%d/api.json";
@@ -123,14 +127,23 @@ public class NolotiroAPI {
             if (json.has("title")) { ad.setTitle(json.getString("title")); }
             if (json.has("body")) { ad.setBody(json.getString("body")); }
             if (json.has("user_owner")) { ad.setUsername(json.getString("user_owner")); }
+            if (json.has("type")) {
+                int t = json.getInt("woeid_code");
+                if (t == 1)
+                    ad.setType(Ad.Type.GIVE);
+                else
+                    ad.setType(Ad.Type.WANT);
+            }
+            if (json.has("woeid_code")) { ad.setWoeid(json.getInt("woeid_code")); }
+            if (json.has("date_created")) { ad.setDate(json.getString("date_created")); }
+            if (json.has("image_file_name")) { ad.setImageFilename(json.getString("image_file_name")); }
             try {
                 if (json.has("status")) { ad.setStatus(Ad.Status.valueOf(json.getString("status").toUpperCase())); }
             } catch (IllegalArgumentException e) {
                 //TODO: Use UNKNOWN or similar
                 ad.setStatus(Ad.Status.DELIVERED);
             }
-            if (json.has("image_file_name")) { ad.setImageFilename(json.getString("image_file_name")); }
-            if (json.has("woeid_code")) { ad.setWoeid(json.getInt("woeid_code")); }
+
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -140,10 +153,12 @@ public class NolotiroAPI {
         return ad;
     }
 
-    public String getPhotoUrlFromAd(Ad ad) {
+    // Returns null if there's no photo
+    public URL getPhotoUrlFromAd(Ad ad) throws MalformedURLException {
         String filename = ad.getImageFilename();
         if(filename == null || filename.equals("null"))
             return null;
-        return String.format(BASE_API_ENDPOINT_OLD + AD_PHOTO_API_ENDPOINT, ad.getImageFilename());
+        URL url = new URL(String.format(BASE_API_ENDPOINT_OLD + AD_PHOTO_API_ENDPOINT, ad.getImageFilename()));
+        return url;
     }
 }

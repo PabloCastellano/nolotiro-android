@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.alabs.nolotiro.db.DbAdapter;
 import org.alabs.nolotiro.exceptions.NolotiroException;
 import org.json.JSONException;
 
@@ -70,32 +71,45 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
         Bitmap bitmap = null;
         File f = null;
         Ad ad = null;
+        DbAdapter dba = null;
+        boolean isInternet = Utils.isInternetAvailable(context);
 
-        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        // Retrieve from DB
+        dba = new DbAdapter(context);
+        dba.openToRead();
+        ad = dba.getAd(itemId);
 
-        if (networkInfo == null || !networkInfo.isConnected()) {
-            errorMessage = context.getResources().getString(R.string.error_connecting);
-            return null;
+        // ad not found in DB
+        if (ad == null) {
+            if (!isInternet) {
+                errorMessage = context.getResources().getString(R.string.error_connecting);
+                ad = null;
+            } else {
+                // call API and insert in DB
+                try {
+                    ad = api.getAd(itemId);
+                    dba.insertAd(ad);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
+                    ad = null;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
+                    ad = null;
+                }
+            }
         }
+        dba.close();
 
-        try {
-            ad = api.getAd(itemId);
-        } catch (IOException e) {
-            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
-            ad = null;
-        } catch (JSONException e) {
-            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
-            ad = null;
-        }
-
+        Log.i(TAG, "ad=" + ad);
         // Exception caught or no photo available
-        if (ad == null || ad.getImageFilename() == null)
+        if (ad == null || ad.getImageFilename() == null) {
+            Log.w(TAG, "Either ad or photo is null");
             return null;
+        }
 
         final Ad finalAd = ad;
-
-        // TODO: Retrieve from DB
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
@@ -128,7 +142,12 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
             if (f.exists()) {
                 bitmap = BitmapFactory.decodeFile(f.toString());
             } else {
-                URL url = new URL(api.getPhotoUrlFromAd(ad));
+                URL url = api.getPhotoUrlFromAd(ad);
+                // If there's no photo then don't download it
+                if (url == null) {
+                    return null;
+                }
+
                 Log.i("Nolotiro", "Downloading image file " + url.toString());
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
@@ -146,10 +165,13 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
 
         } catch (NolotiroException e) {
             e.printStackTrace();
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
         }
 
         image.setTag(photoPath);

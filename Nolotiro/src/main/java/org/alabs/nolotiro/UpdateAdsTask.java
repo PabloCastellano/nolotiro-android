@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
+import org.alabs.nolotiro.db.DbAdapter;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -26,14 +27,16 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
     private Context context;
     private NolotiroAPI api;
     private Integer page = 1;
+    private Integer woeid = Utils.DEBUG_WOEID;
     private String errorMessage = null;
 
-    public UpdateAdsTask(ListFragment _fragment) {
+    public UpdateAdsTask(ListFragment _fragment, Integer _woeid) {
         api = NolotiroAPI.getInstance();
         context = _fragment.getActivity();
         fragment = _fragment;
+        woeid = _woeid;
         progress = new ProgressDialog(context);
-        progress.setMessage("Loading...");
+        progress.setMessage(context.getResources().getString(R.string.loading));
     }
 
     protected void onPreExecute() {
@@ -52,15 +55,26 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
             public void run() {
                 if (ads != null) {
                     AdListAdapter adapter = (AdListAdapter) fragment.getListAdapter();
+                    DbAdapter dba = new DbAdapter(context);
+                    dba.openToWrite();
+
                     if(adapter == null) {
                         adapter = new AdListAdapter(fragment.getActivity(), ads);
                         fragment.setListAdapter(adapter);
+
+                        for(Ad ad : ads) {
+                            dba.insertAd(ad);
+                        }
+
                     } else {
                         // addAll() is only available on API >= 11
                         for(Ad ad : ads) {
                             adapter.add(ad);
+                            dba.insertAd(ad);
                         }
+
                     }
+                    dba.close();
                     adapter.notifyDataSetChanged();
                 } else {
                     fragment.setListAdapter(null);
@@ -72,21 +86,18 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         progress.dismiss();
     }
 
-    //TODO: get woeid from preferences
     protected List<Ad> doInBackground(Integer... pages) {
         page = pages[0];
         List<Ad> ads = null;
+        boolean isInternet = Utils.isInternetAvailable(context);
 
-        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        if (networkInfo == null || !networkInfo.isConnected()) {
+        if (!isInternet) {
             errorMessage = context.getResources().getString(R.string.error_connecting);
             return null;
         }
 
         try {
-            ads = api.getGives(page, 766273);
+            ads = api.getGives(page, woeid);
         } catch (IOException e) {
             errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
             ads = null;

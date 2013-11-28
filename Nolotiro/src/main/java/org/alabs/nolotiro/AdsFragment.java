@@ -13,10 +13,9 @@ public class AdsFragment extends ListFragment {
 
     private static final String TAG = "AdsFragment";
     private static final Integer DEFAULT_WOEID = 766356;
-    private NolotiroAPI nolotiro;
 
     public AdsFragment() {
-        nolotiro = NolotiroAPI.getInstance();
+
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,8 @@ public class AdsFragment extends ListFragment {
     }
 
     public void refreshAds() {
-        UpdateAdsTask updateTask = new UpdateAdsTask(this);
+        //TODO: get woeid from preferences
+        UpdateAdsTask updateTask = new UpdateAdsTask(this, Utils.DEBUG_WOEID);
         updateTask.execute(1);
     }
 
@@ -75,7 +75,8 @@ public class AdsFragment extends ListFragment {
             if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                 // I load the next page of gigs using a background task,
                 // but you can call any function here.
-                new UpdateAdsTask(AdsFragment.this).execute(currentPage + 1);
+                //TODO: get woeid from preferences
+                new UpdateAdsTask(AdsFragment.this, Utils.DEBUG_WOEID).execute(currentPage + 1);
                 loading = true;
             }
         }
