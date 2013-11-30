@@ -3,6 +3,7 @@ package org.alabs.nolotiro;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
@@ -76,4 +77,8 @@ public class Utils {
         return true;
     }
 
+    public static int getContentViewCompat() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ?
+                android.R.id.content : R.id.action_bar_activity_content;
+    }
 }
