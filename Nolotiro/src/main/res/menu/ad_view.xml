@@ -2,9 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".AdViewActivity" >
-    
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+
+    <item android:id="@+id/action_bookmark"
+        android:title="@string/bookmark"
+        android:orderInCategory="98"
+        android:icon="@drawable/ic_rating_not_important"
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_comment"
+        android:title="@string/post_comment"
+        android:orderInCategory="99"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_contact"
+        android:title="@string/contact_owner"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
 </menu>
