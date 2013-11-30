@@ -110,7 +110,7 @@ public class DbAdapter{
         values.put(KEY_IMAGE, ad.getImageFilename());
         values.put(KEY_STATUS, String.valueOf(ad.getStatus()));
         values.put(KEY_FAVORITE, false);
-        return sqLiteDatabase.insert(DATABASE_ADS_TABLE, null, values);
+        return sqLiteDatabase.insertWithOnConflict(DATABASE_ADS_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
     public Ad getAd(int id) throws SQLException {
