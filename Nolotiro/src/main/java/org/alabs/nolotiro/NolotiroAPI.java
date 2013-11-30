@@ -27,18 +27,23 @@ public class NolotiroAPI {
     private static final NolotiroAPI INSTANCE = new NolotiroAPI();
 
     private static final String TAG = "NolotiroAPI";
-    private static final String BASE_API_ENDPOINT = "http://beta.nolotiro.org";
-    private static final String BASE_API_ENDPOINT_OLD = "http://nolotiro.org";
-    private static final String AD_API_ENDPOINT = "/ad/%d/api.json";
+    private static final String DEFAULT_BASE_ENDPOINT = "http://beta.nolotiro.org";
+    private static final String OLD_BASE_ENDPOINT = "http://nolotiro.org";
+    private static final String AD_API_ENDPOINT = "/api/v1/ad/%d";
     private static final String AD_PHOTO_API_ENDPOINT = "/images/uploads/ads/original/%s";
-    private static final String GIVE_LIST_BY_WOEID_AND_PAGE_ENDPOINT = "/api/v1/woeid/%d/give?page=%d";
+    private static final String LIST_GIVES_BY_WOEID = "/api/v1/woeid/%d/give?page=%d";
+    private static final String LIST_WANTS_BY_WOEID = "/api/v1/woeid/%d/want?page=%d";
+    private static final String LIST_WOEIDS = "/api/v1/woeid/list";
 
     private Map<Integer, Ad> cache;
 
-    private String langId = "es";
+    private String langId;
+    private String hostname;
 
     private NolotiroAPI() {
         cache = new HashMap<Integer, Ad>();
+        hostname = DEFAULT_BASE_ENDPOINT;
+        langId = "es";
         INIT_API_CREDENTIALS();
     }
 
@@ -56,7 +61,7 @@ public class NolotiroAPI {
 
         Ad ad = null;
 
-        String requestURL = String.format(BASE_API_ENDPOINT + AD_API_ENDPOINT, id);
+        String requestURL = String.format(hostname + AD_API_ENDPOINT, id);
         JSONObject adJSON = makeRequest(requestURL);
         ad = jsonToAd(adJSON);
         ad.setId(id);
@@ -66,13 +71,21 @@ public class NolotiroAPI {
         return ad;
     }
 
-    public List<Ad> getWants(int offset) {
-        //TODO: Implement when rest api is complete
-        return null;
+    public List<Ad> getWants(int offset, int woeId) throws IOException, JSONException {
+        String requestURL = String.format(hostname + LIST_WANTS_BY_WOEID, woeId, offset);
+        List<Ad> ads = new ArrayList<Ad>();
+
+        JSONObject response = makeRequest(requestURL);
+        JSONArray adsJSON = new JSONArray(response.getString("ads"));
+        for(int i = 0; i < adsJSON.length(); i++) {
+            ads.add(jsonToAd(adsJSON.getJSONObject(i)));
+        }
+
+        return ads;
     }
 
     public List<Ad> getGives(int offset, int woeId) throws IOException, JSONException {
-        String requestURL = String.format(BASE_API_ENDPOINT + GIVE_LIST_BY_WOEID_AND_PAGE_ENDPOINT, woeId, offset);
+        String requestURL = String.format(hostname + LIST_GIVES_BY_WOEID, woeId, offset);
         List<Ad> ads = new ArrayList<Ad>();
 
         JSONObject response = makeRequest(requestURL);
@@ -158,7 +171,15 @@ public class NolotiroAPI {
         String filename = ad.getImageFilename();
         if(filename == null || filename.equals("null"))
             return null;
-        URL url = new URL(String.format(BASE_API_ENDPOINT_OLD + AD_PHOTO_API_ENDPOINT, ad.getImageFilename()));
+        URL url = new URL(String.format(OLD_BASE_ENDPOINT + AD_PHOTO_API_ENDPOINT, ad.getImageFilename()));
         return url;
+    }
+
+    public void setHostname(String _hostname) {
+        hostname = _hostname;
+    }
+
+    public void setLangId(String _langId) {
+        langId = _langId;
     }
 }
