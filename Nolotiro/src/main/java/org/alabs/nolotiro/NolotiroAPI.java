@@ -30,7 +30,8 @@ public class NolotiroAPI {
     private static final String DEFAULT_BASE_ENDPOINT = "http://beta.nolotiro.org";
     private static final String OLD_BASE_ENDPOINT = "http://nolotiro.org";
     private static final String AD_API_ENDPOINT = "/api/v1/ad/%d";
-    private static final String AD_PHOTO_API_ENDPOINT = "/images/uploads/ads/original/%s";
+    private static final String AD_PHOTO_URL = "/images/uploads/ads/original/%s";
+    private static final String AD_THUMB_URL = "/images/uploads/ads/100/%s";
     private static final String LIST_GIVES_BY_WOEID = "/api/v1/woeid/%d/give?page=%d";
     private static final String LIST_WANTS_BY_WOEID = "/api/v1/woeid/%d/want?page=%d";
     private static final String LIST_WOEIDS = "/api/v1/woeid/list";
@@ -52,6 +53,12 @@ public class NolotiroAPI {
     }
 
     private void INIT_API_CREDENTIALS() {
+        //TODO: DO NOT COMMIT
+        Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("nolotiro", "sincondiciones".toCharArray());
+            }
+        });
     }
 
     public Ad getAd(int id) throws JSONException, IOException {
@@ -171,7 +178,16 @@ public class NolotiroAPI {
         String filename = ad.getImageFilename();
         if(filename == null || filename.equals("null"))
             return null;
-        URL url = new URL(String.format(OLD_BASE_ENDPOINT + AD_PHOTO_API_ENDPOINT, ad.getImageFilename()));
+        URL url = new URL(String.format(OLD_BASE_ENDPOINT + AD_PHOTO_URL, ad.getImageFilename()));
+        return url;
+    }
+
+    // Returns null if there's no photo
+    public URL getThumbnailUrlFromAd(Ad ad) throws MalformedURLException {
+        String filename = ad.getImageFilename();
+        if(filename == null || filename.equals("null"))
+            return null;
+        URL url = new URL(String.format(OLD_BASE_ENDPOINT + AD_THUMB_URL, ad.getImageFilename()));
         return url;
     }
 
