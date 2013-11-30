@@ -121,8 +121,11 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
 
         public void onTabSelected(Tab tab, FragmentTransaction ft) {
             if (mFragment == null) {
-                mFragment = Fragment.instantiate(mActivity, mClass.getName());
-                ft.add(Utils.getContentViewCompat(), mFragment, mTag);
+                Fragment f = getSupportFragmentManager().findFragmentByTag(mTag);
+                if(f == null ) {
+                    mFragment = Fragment.instantiate(mActivity, mClass.getName());
+                    ft.add(Utils.getContentViewCompat(), mFragment, mTag);
+                }
             } else {
                 ft.attach(mFragment);
             }

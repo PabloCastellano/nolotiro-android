@@ -14,19 +14,25 @@ public class AdsFragment extends ListFragment {
     private static final String TAG = "AdsFragment";
     private static final Integer DEFAULT_WOEID = 766356;
 
-    public AdsFragment() {
+    boolean recreated;
 
+    public AdsFragment() {
     }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRetainInstance(true);
+        recreated = false;
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        refreshAds();
-        this.getListView().setOnScrollListener(new EndlessScrollListener());
-        // TODO: Restore position
+        if(!recreated) {
+            refreshAds();
+            this.getListView().setOnScrollListener(new EndlessScrollListener());
+            recreated = true;
+            // TODO: Restore position
+        }
     }
 
     public void onSaveInstanceState(Bundle outState) {

@@ -22,7 +22,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
 
     private static final String TAG = "UpdateAdsTask";
 
-    private ProgressDialog progress;
+    //private ProgressDialog progress;
     private ListFragment fragment;
     private Context context;
     private NolotiroAPI api;
@@ -35,12 +35,12 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         context = _fragment.getActivity();
         fragment = _fragment;
         woeid = _woeid;
-        progress = new ProgressDialog(context);
-        progress.setMessage(context.getResources().getString(R.string.loading));
+       // progress = new ProgressDialog(context);
+       // progress.setMessage(context.getResources().getString(R.string.loading));
     }
 
     protected void onPreExecute() {
-        progress.show();
+        //progress.show();
     }
 
     protected void onPostExecute(final List<Ad> ads) {
@@ -83,7 +83,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
             }
         });
 
-        progress.dismiss();
+        //progress.dismiss();
     }
 
     protected List<Ad> doInBackground(Integer... pages) {
