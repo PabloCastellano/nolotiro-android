@@ -38,7 +38,7 @@ public class AdsFragment extends ListFragment {
         Ad ad = (Ad) listView.getAdapter().getItem(position);
         Log.i(TAG, "Clicked on " + ad.getTitle());
 
-        startActivity(new Intent(getActivity(), AdViewActivity.class).putExtra("id", ad.getId()));
+        startActivity(new Intent(getActivity(), AdViewActivity.class).putExtra("ad", ad));
     }
 
     public void refreshAds() {

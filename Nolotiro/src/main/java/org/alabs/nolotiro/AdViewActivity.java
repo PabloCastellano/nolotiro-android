@@ -18,18 +18,19 @@ import android.widget.ImageView;
 public class AdViewActivity extends ActionBarActivity {
 
     private static final String TAG = "AdViewActivity";
+    private Ad ad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ad_view);
-        int id = getIntent().getIntExtra("id", 0);
+        ad = (Ad) getIntent().getSerializableExtra("ad");
 
-        Log.i(TAG, "Created new activity to show item " + id);
+        Log.i(TAG, "Created new activity to show item " + ad.getId());
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new AdViewFragment(id))
+                    .add(R.id.container, new AdViewFragment(ad))
                     .commit();
         }
     }
@@ -59,11 +60,10 @@ public class AdViewActivity extends ActionBarActivity {
 
     public static class AdViewFragment extends Fragment {
 
-        int itemId;
+        private Ad ad;
 
-        // TODO: Pass whole Ad instead of just its id
-        public AdViewFragment(int id) {
-            itemId = id;
+        public AdViewFragment(Ad _ad) {
+            ad = _ad;
         }
 
         public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class AdViewActivity extends ActionBarActivity {
 
         public void onViewCreated(View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            loadItemData(itemId);
+            loadItemData();
             ImageView image = (ImageView) this.getActivity().findViewById(R.id.imageImage);
             image.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -82,12 +82,11 @@ public class AdViewActivity extends ActionBarActivity {
                     startActivity(intent);
                 }
             });
-
         }
 
-        private void loadItemData(int id) {
-            ShowAdTask showTask = new ShowAdTask(this);
-            showTask.execute(id);
+        private void loadItemData() {
+            ShowAdTask showTask = new ShowAdTask(this, ad);
+            showTask.execute();
         }
 
         @Override

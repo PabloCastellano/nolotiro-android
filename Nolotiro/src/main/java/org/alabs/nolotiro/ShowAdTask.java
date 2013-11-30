@@ -27,25 +27,33 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 // This task checks if the Ad photo is available in cache and downloads it if necessary
-public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
+public class ShowAdTask extends AsyncTask<Void, Void, Bitmap> {
 
     private static final String TAG = "ShowAdTask";
     private Fragment fragment;
     private Context context;
     private NolotiroAPI api;
     private ImageView image;
-    private Integer itemId = 0;
     private String errorMessage = null;
+    private Ad ad;
 
-    public ShowAdTask(Fragment _fragment) {
+    public ShowAdTask(Fragment _fragment, Ad _ad) {
         api = NolotiroAPI.getInstance();
         context = _fragment.getActivity();
         fragment = _fragment;
+        ad = _ad;
+        Log.i(TAG, "ad=" + ad);
     }
 
     protected void onPreExecute() {
+        TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
+        TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
+
         image = (ImageView)fragment.getActivity().findViewById(R.id.imageImage);
         image.setVisibility(View.INVISIBLE);
+        title.setText(ad.getTitle());
+        description.setText(ad.getBody());
+        fragment.getActivity().setTitle(ad.getTitle());
     }
 
     protected void onPostExecute(final Bitmap bitmap) {
@@ -59,75 +67,26 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
                 if(bitmap != null) {
                     image.setVisibility(View.VISIBLE);
                     image.setImageBitmap(bitmap);
-                } else {
+                } else if (errorMessage != null) {
                     Toast.makeText(context, finalMessage, Toast.LENGTH_LONG).show();
                 }
+                // otherwise the ad doesn't contain any photo
             }
         });
-    }
-
-    protected Bitmap doInBackground(Integer... itemIds) {
-        itemId = itemIds[0];
-        Bitmap bitmap = null;
-        File f = null;
-        Ad ad = null;
-        DbAdapter dba = null;
-        boolean isInternet = Utils.isInternetAvailable(context);
-
-        // Retrieve from DB
-        dba = new DbAdapter(context);
-        dba.openToRead();
-        ad = dba.getAd(itemId);
-
-        // ad not found in DB
-        if (ad == null) {
-            if (!isInternet) {
-                errorMessage = context.getResources().getString(R.string.error_connecting);
-                ad = null;
-            } else {
-                // call API and insert in DB
-                try {
-                    ad = api.getAd(itemId);
-                    dba.insertAd(ad);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
-                    ad = null;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    errorMessage = context.getResources().getString(R.string.error_retrieving_ads);
-                    ad = null;
-                }
-            }
-        }
-        dba.close();
-
-        Log.i(TAG, "ad=" + ad);
-        // Exception caught or no photo available
-        if (ad == null || ad.getImageFilename() == null) {
-            Log.w(TAG, "Either ad or photo is null");
-            return null;
-        }
-
-        final Ad finalAd = ad;
-        fragment.getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                TextView title = (TextView)fragment.getActivity().findViewById(R.id.textTitle);
-                TextView description = (TextView)fragment.getActivity().findViewById(R.id.textDescription);
-                title.setText(finalAd.getTitle());
-                description.setText(finalAd.getBody());
-                fragment.getActivity().setTitle(finalAd.getTitle());
-            }
-        });
-
-        return retrievePhoto(ad);
     }
 
     // Retrieve photo from cache dir if available. Otherwise download it.
-    private Bitmap retrievePhoto(Ad ad) {
-        File f = null;
+    protected Bitmap doInBackground(Void... voids) {
         Bitmap bitmap = null;
         String photoPath = null;
+        boolean isInternet;
+        File f;
+
+        // No photo available
+        if (ad.getImageFilename() == null) {
+            Log.w(TAG, "photo is null");
+            return null;
+        }
 
         try {
             String nolotiroDir = Utils.getNolotiroCacheDir(context);
@@ -142,25 +101,31 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
             if (f.exists()) {
                 bitmap = BitmapFactory.decodeFile(f.toString());
             } else {
-                URL url = api.getPhotoUrlFromAd(ad);
-                // If there's no photo then don't download it
-                if (url == null) {
+                isInternet = Utils.isInternetAvailable(context);
+
+                if (!isInternet) {
+                    errorMessage = context.getResources().getString(R.string.error_connecting);
                     return null;
+                } else {
+                    URL url = api.getPhotoUrlFromAd(ad);
+                    // If there's no photo then don't download it
+                    if (url == null) {
+                        return null;
+                    }
+
+                    Log.i("Nolotiro", "Downloading image file " + url.toString());
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+                    bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+
+                    f.createNewFile();
+                    FileOutputStream fo = new FileOutputStream(f.getAbsoluteFile());
+                    fo.write(bytes.toByteArray());
+                    fo.close();
+                    Log.i(TAG, "File saved to: " + f.getAbsolutePath());
                 }
-
-                Log.i("Nolotiro", "Downloading image file " + url.toString());
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-                bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-
-                f.createNewFile();
-                FileOutputStream fo = new FileOutputStream(f.getAbsoluteFile());
-                fo.write(bytes.toByteArray());
-                fo.close();
-                Log.i(TAG, "File saved to: " + f.getAbsolutePath());
             }
-
             photoPath = f.getAbsolutePath();
 
         } catch (NolotiroException e) {
@@ -177,5 +142,6 @@ public class ShowAdTask extends AsyncTask<Integer, Void, Bitmap> {
         image.setTag(photoPath);
         return bitmap;
     }
+
 
 }
