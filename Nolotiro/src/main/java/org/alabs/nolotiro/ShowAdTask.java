@@ -18,6 +18,7 @@ import org.alabs.nolotiro.db.DbAdapter;
 import org.alabs.nolotiro.exceptions.NolotiroException;
 import org.json.JSONException;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -89,17 +90,10 @@ public class ShowAdTask extends AsyncTask<Void, Void, Bitmap> {
         }
 
         try {
-            String nolotiroDir = Utils.getNolotiroCacheDir(context);
-            f = new File(nolotiroDir);
-            if (!f.exists()) {
-                Log.i(TAG, "Mkdir " + f);
-                f.mkdirs();
-            }
-
-            f = new File(nolotiroDir + ad.getImageFilename());
+            f = Utils.getPhotoPath(context, ad);
 
             if (f.exists()) {
-                bitmap = BitmapFactory.decodeFile(f.toString());
+                bitmap = Utils.decodeSampledBitmapFromPath(f.getAbsolutePath(), 200, 200);
             } else {
                 isInternet = Utils.isInternetAvailable(context);
 
@@ -113,17 +107,21 @@ public class ShowAdTask extends AsyncTask<Void, Void, Bitmap> {
                         return null;
                     }
 
-                    Log.i("Nolotiro", "Downloading image file " + url.toString());
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-                    bitmap = BitmapFactory.decodeStream((InputStream) url.getContent());
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+                    Log.i(TAG, "Downloading image file " + url.toString());
+                    BufferedInputStream bis = new BufferedInputStream(url.openStream());
+                    int read = 0;
+                    byte[] bytes = new byte[1024];
 
                     f.createNewFile();
                     FileOutputStream fo = new FileOutputStream(f.getAbsoluteFile());
-                    fo.write(bytes.toByteArray());
+
+                    while ((read = bis.read(bytes)) != -1) {
+                        fo.write(bytes, 0, read);
+                    }
                     fo.close();
+
                     Log.i(TAG, "File saved to: " + f.getAbsolutePath());
+                    bitmap = Utils.decodeSampledBitmapFromPath(f.getAbsolutePath(), 200, 200);
                 }
             }
             photoPath = f.getAbsolutePath();

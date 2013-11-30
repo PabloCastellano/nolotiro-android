@@ -91,6 +91,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         List<Ad> ads = null;
         boolean isInternet = Utils.isInternetAvailable(context);
 
+        // TODO: If there's no Internet, then try to load last X ads from cache
         if (!isInternet) {
             errorMessage = context.getResources().getString(R.string.error_connecting);
             return null;

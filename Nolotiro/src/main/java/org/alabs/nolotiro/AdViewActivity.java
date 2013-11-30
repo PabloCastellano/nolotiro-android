@@ -78,6 +78,7 @@ public class AdViewActivity extends ActionBarActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
+                    // TODO: don't use tag
                     intent.setDataAndType(Uri.parse("file://" + v.getTag()), "image/*");
                     startActivity(intent);
                 }
