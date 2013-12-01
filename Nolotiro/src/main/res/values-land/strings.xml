@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Nolotiro</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="change_location">Change location</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_settings">Settings</string>
+    <string name="wants">Wants</string>
+    <string name="gives">Gives</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="type_location">Type your location here</string>
+    <string name="choose_location">Choose your \"%1$s\"</string>
+    <string name="add_new">Add new</string>
+    <string name="create_new_ad">Create new ad</string>
+    <string name="create_new_ad_in">Create new ad in %1$s</string>
+    <string name="title_activity_ad_view">Ad</string>
+    <string name="error_connecting">There was an error connecting to the server. Please check hostname and your Internet connection</string>
+    <string name="error_retrieving_ad">There was an error while retrieving this ad</string>
+    <string name="error_retrieving_ads">There was an error while retrieving ads</string>
+    <string name="loading">Loading...</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="post_comment">Post a comment</string>
+    <string name="contact_owner">Contact owner</string>
+
+    <string-array name="example_cities">
+        <item>Málaga</item>
+        <item>Madrid</item>
+        <item>Fuengirola</item>
+    </string-array>
+
+</resources>
