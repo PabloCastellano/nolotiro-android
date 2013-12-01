@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import org.alabs.nolotiro.db.DbAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,11 +17,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// This task queries Yahoo API in order to get the woeid of the queried area
+// Obtained woeids will be saved into the DB for further requests
 public class WoeidPlacesTask extends AsyncTask<String, Void, List<Woeid>> {
 
     private static final String TAG = "WoeidPlacesTask";
@@ -29,10 +32,6 @@ public class WoeidPlacesTask extends AsyncTask<String, Void, List<Woeid>> {
     private Fragment fragment;
     private Context context;
     private String place = null;
-
-    public WoeidPlacesTask() {
-
-    }
 
     public WoeidPlacesTask(Fragment _fragment) {
         context = _fragment.getActivity();
@@ -45,29 +44,62 @@ public class WoeidPlacesTask extends AsyncTask<String, Void, List<Woeid>> {
         //progress.show();
     }
 
-    protected  void onPostExecute(final List<String> places) {
-        /*
-        fragment.getActivity().runOnUiThread(new Runnable() {
-            public void run() {
-                // Save current woeid
-            }
-        });
-        */
-        //progress.dismiss();
+    protected  void onPostExecute(final List<Woeid> woeids) {
+
     }
 
-    // TODO: where ... and lang="es"
-    // TODO: cuidado tildes: "Córdoba"
     protected List<Woeid> doInBackground(String... places) {
         place = places[0];
         List<Woeid> woeids = new ArrayList<Woeid>();
-        String request = "http://query.yahooapis.com/v1/public/yql?q=select%20name,%20country,%20admin1,%20woeid%20from%20geo.places%20where%20text%3D%22" + place + "%22&format=json";
+        //DbAdapter dba = new DbAdapter(context);
+        //dba.openToWrite();
+
+        try {
+            JSONObject jObject = queryYahooWoeid(place);
+            Object o = jObject.getJSONObject("query").getJSONObject("results").get("place");
+            Woeid woeid;
+
+            if (o instanceof JSONArray) {
+                JSONArray ja = (JSONArray) o;
+                Log.i(TAG, "Number of places with similar name: " + ja.length());
+
+                for (int i=0; i < ja.length(); i++)
+                {
+                    woeid = jsonArrayToWoeid(ja, i);
+                    woeids.add(woeid);
+                    //dba.insertWoeid(woeid);
+                    Log.i(TAG, "Place: " + woeid);
+                }
+            } else if (o instanceof JSONObject) {
+                JSONObject ja = (JSONObject) o;
+
+                woeid = jsonObjectToWoeid(ja);
+                woeids.add(woeid);
+                //dba.insertWoeid(woeid);
+                Log.i(TAG, "Place: " + woeid);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            //dba.close();
+        }
+
+        return woeids;
+    }
+
+    // Query Yahoo api in order to get possible woeids and return JSONObject with response
+    // TODO: where ... and lang="es"
+    private JSONObject queryYahooWoeid(String place) throws JSONException {
+        place = Utils.removeSpecialChars(place);
+        String request = "http://query.yahooapis.com/v1/public/yql?q=select%20name,%20country,%20admin1,%20woeid%20from%20geo.places%20where%20text%3D%22" + place + "%22%20and%20lang%3D%22es%22&format=json";
+        HttpURLConnection urlConnection = null;
+        JSONObject jo = null;
+
         Log.i(TAG, request);
 
-        URL url = null;
-        HttpURLConnection urlConnection = null;
         try {
-            url = new URL(request);
+            URL url = new URL(request);
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"), 8);
@@ -79,47 +111,36 @@ public class WoeidPlacesTask extends AsyncTask<String, Void, List<Woeid>> {
                 sb.append(line + "\n");
             }
 
-            String name, region, country, woeid;
-            String placename;
-
-            JSONObject jObject = new JSONObject(sb.toString());
-            Object o = jObject.getJSONObject("query").getJSONObject("results").get("place");
-            if (o instanceof JSONArray) {
-                JSONArray ja = (JSONArray) o;
-                Log.i(TAG, "Number of places with same name: " + ja.length());
-
-                for (int i=0; i < ja.length(); i++)
-                {
-                    name = ja.getJSONObject(i).getString("name");
-                    woeid = ja.getJSONObject(i).getString("woeid");
-                    region = ja.getJSONObject(i).getJSONObject("admin1").getString("content");
-                    country = ja.getJSONObject(i).getJSONObject("country").getString("content");
-                    placename = name + ", " + region + ", " + country + " (" + woeid + ")";
-                    Log.i(TAG, "Place: " + placename);
-                    woeids.add(new Woeid(Integer.parseInt(woeid), name, region, country));
-                }
-            } else if (o instanceof JSONObject) {
-                JSONObject ja = (JSONObject) o;
-
-                name = ja.getString("name");
-                woeid = ja.getString("woeid");
-                region = ja.getJSONObject("admin1").getString("content");
-                country = ja.getJSONObject("country").getString("content");
-                placename = name + ", " + region + ", " + country + " (" + woeid + ")";
-                Log.i(TAG, "Place: " + placename);
-                woeids.add(new Woeid(Integer.parseInt(woeid), name, region, country));
-            }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            jo = new JSONObject(sb.toString());
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         } finally {
             urlConnection.disconnect();
         }
 
-        return woeids;
+        return jo;
+    }
+
+    // Parse JSONObject and return Woeid object
+    private Woeid jsonObjectToWoeid(JSONObject ja) throws JSONException {
+        String name, region, country, id;
+
+        name = ja.getString("name");
+        id = ja.getString("woeid");
+        region = ja.getJSONObject("admin1").getString("content");
+        country = ja.getJSONObject("country").getString("content");
+        return new Woeid(Integer.parseInt(id), name, region, country);
+    }
+
+    // Parse JSONArray and return Woeid object
+    private Woeid jsonArrayToWoeid(JSONArray ja, int i) throws JSONException {
+        String name, region, country, id;
+        JSONObject jo = ja.getJSONObject(i);
+
+        name = jo.getString("name");
+        id = jo.getString("woeid");
+        region = jo.getJSONObject("admin1").getString("content");
+        country = jo.getJSONObject("country").getString("content");
+        return new Woeid(Integer.parseInt(id), name, region, country);
     }
 }

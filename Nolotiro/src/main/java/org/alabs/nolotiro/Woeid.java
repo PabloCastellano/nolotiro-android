@@ -1,5 +1,11 @@
 package org.alabs.nolotiro;
 
+import android.content.Context;
+
+import org.alabs.nolotiro.db.DbAdapter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Woeid {
 
@@ -50,4 +56,41 @@ public class Woeid {
         return id;
     }
 
+    public static class Manager {
+
+        private static final Woeid.Manager INSTANCE = new Manager();
+        private Map<Integer, Woeid> cache;
+        private DbAdapter dba = null;
+
+        private Manager () {
+            cache = new HashMap<Integer, Woeid>();
+        }
+
+        public static Manager getInstance() {
+            return INSTANCE;
+        }
+
+        public void setContext(Context ctx) {
+            //dba = new DbAdapter(ctx);
+        }
+
+        public String getName(int id) {
+            // retrieve from cache
+            if(cache.containsKey(id)) {
+                return cache.get(id).getName();
+            }
+
+            // retrieve from DB
+            //if (dba != null) {
+            //    dba.
+            //}
+            Woeid woeid = new Woeid(1, "", "", "");
+
+            // retrieve from API
+
+
+            cache.put(id, woeid);
+            return woeid.getName();
+        }
+    }
 }

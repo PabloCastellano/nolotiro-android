@@ -1,9 +1,12 @@
 package org.alabs.nolotiro;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -15,6 +18,7 @@ import android.util.Log;
 import android.support.v7.app.ActionBar.Tab;
 import android.widget.Toast;
 
+import org.alabs.nolotiro.db.DbAdapter;
 import org.alabs.nolotiro.dialogs.ChangeLocationDialogFragment;
 import org.alabs.nolotiro.dialogs.ChooseLocationDialogFragment;
 import org.alabs.nolotiro.dialogs.FindLocationDialogFragment;
@@ -31,13 +35,27 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: fix real current woeid
-        currentWoeid = new Woeid(1, "Málaga", "Andalusia", "Spain");
-        actionBar = getSupportActionBar();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        int id = sharedPref.getInt("current_woeid", Utils.DEBUG_WOEID);
+        Log.i(TAG, "current_woeid: " + id);
+        DbAdapter dba = new DbAdapter(this);
+        dba.openToRead();
+        currentWoeid = dba.getWoeid(id);
+        Log.i(TAG, "woeid= " + currentWoeid);
+        dba.close();
 
-        String title = getResources().getString(R.string.app_name) + " (" + currentWoeid.getName() + ")";
-        actionBar.setTitle(title);
+        // FIXME: Bootstrap
+        if (currentWoeid == null) {
+            currentWoeid = new Woeid(Utils.DEBUG_WOEID, "Málaga", "Andalucía", "España");
+            dba.openToWrite();
+            dba.insertWoeid(currentWoeid);
+            dba.close();
+        }
+
+        actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        updateTitle();
 
         Tab tab = actionBar.newTab()
                 .setText(R.string.gives)
@@ -96,19 +114,59 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
         frag.show(getSupportFragmentManager(), "FindLocationDialog");
     }
 
+    public void onChangeDialogPositiveClick(DialogFragment dialog, Woeid newWoeid) {
+        dialog.dismiss();
+
+        changeWoeid(newWoeid);
+    }
+
     // step3: Find woeid
+    // TODO: Don't reload dialog, don't close instead
     public void onFindDialogPositiveClick(DialogFragment dialog, String location) {
+        boolean isInternet = Utils.isInternetAvailable(this);
         Log.i(TAG, "location: " + location);
         dialog.dismiss();
 
-        DialogFragment frag = new ChooseLocationDialogFragment(location);
-        frag.show(getSupportFragmentManager(), "ChooseLocationDialog");
+        if (!isInternet) {
+            DialogFragment frag = new FindLocationDialogFragment(location);
+            frag.show(getSupportFragmentManager(), "FindLocationDialog");
+            Toast.makeText(this, getResources().getString(R.string.error_connecting), Toast.LENGTH_LONG).show();
+        } else {
+            DialogFragment frag = new ChooseLocationDialogFragment(location);
+            frag.show(getSupportFragmentManager(), "ChooseLocationDialog");
+        }
     }
 
-    @Override
-    public void onChooseDialogPositiveClick(DialogFragment dialog, Woeid woeid) {
-        Toast.makeText(this, woeid.toString(), Toast.LENGTH_SHORT).show();
+    public void onChooseDialogPositiveClick(DialogFragment dialog, Woeid newWoeid) {
         dialog.dismiss();
+
+        DbAdapter dba = new DbAdapter(this);
+        dba.openToWrite();
+        dba.insertWoeid(currentWoeid);
+        dba.close();
+
+        changeWoeid(newWoeid);
+    }
+
+    private void changeWoeid(Woeid newWoeid) {
+        Toast.makeText(this, newWoeid.toString(), Toast.LENGTH_SHORT).show();
+        // Save current woeid
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("current_woeid", newWoeid.getId());
+        editor.commit();
+        currentWoeid = newWoeid;
+
+        updateTitle();
+
+        // refreshAds
+        ListFragment f = (ListFragment) getSupportFragmentManager().findFragmentByTag(GIVES_TAG);
+        f.setListAdapter(null);
+    }
+
+    private void updateTitle() {
+        String title = getResources().getString(R.string.app_name) + " (" + currentWoeid.getName() + ")";
+        actionBar.setTitle(title);
     }
 
     public class TabListener<T extends Fragment> implements ActionBar.TabListener {

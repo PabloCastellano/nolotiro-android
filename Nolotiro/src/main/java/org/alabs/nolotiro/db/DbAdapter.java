@@ -12,9 +12,11 @@ import android.provider.BaseColumns;
 import org.alabs.nolotiro.Ad;
 import org.alabs.nolotiro.Woeid;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class DbAdapter{
+// TODO: Cache woeid search
+public class DbAdapter {
 
     // database
     private static final String DATABASE_NAME = "nolotiro";
@@ -38,7 +40,6 @@ public class DbAdapter{
     public static final String KEY_NAME = "name";
     public static final String KEY_ADMIN1 = "admin1";
     public static final String KEY_COUNTRY = "country";
-
 
     private static final String DATABASE_CREATE_ADS_TABLE = "create table " + DATABASE_ADS_TABLE + " (" +
             KEY_ID +" integer primary key, "+
@@ -100,6 +101,7 @@ public class DbAdapter{
     }
 
     // --------------- Ads table --------------------
+    // TODO: Should update instead of insert when last_modified field is more recent
     public long insertAd(Ad ad) {
         ContentValues values = new ContentValues();
         values.put(KEY_ID, ad.getId());
@@ -159,7 +161,9 @@ public class DbAdapter{
         return null;
     }
 
-    public Ad getFavoriteAds(Ad.Type type, int limit) throws SQLException {
+    public List<Ad> getFavoriteAds(Ad.Type type, int limit) throws SQLException {
+        List<Ad> ads = null;
+
         Cursor mCursor =
                 sqLiteDatabase.query(DATABASE_ADS_TABLE, new String[] {
                         KEY_ID,
@@ -180,20 +184,24 @@ public class DbAdapter{
                         null,
                         null); //TODO: set limit
         if (mCursor != null && mCursor.getCount() > 0) {
+            ads = new ArrayList<Ad>();
             mCursor.moveToFirst();
-            Ad ad = new Ad();
-            ad.setId(mCursor.getInt(mCursor.getColumnIndex(KEY_ID)));
-            ad.setTitle(mCursor.getString(mCursor.getColumnIndex(KEY_TITLE)));
-            ad.setBody(mCursor.getString(mCursor.getColumnIndex(KEY_BODY)));
-            ad.setUsername(mCursor.getString(mCursor.getColumnIndex(KEY_USERNAME)));
-            ad.setType(Ad.Type.valueOf(mCursor.getString(mCursor.getColumnIndex(KEY_TYPE))));
-            ad.setWoeid(mCursor.getInt(mCursor.getColumnIndex(KEY_WOEID)));
-            ad.setDate(mCursor.getString(mCursor.getColumnIndex(KEY_DATE)));
-            ad.setImageFilename(mCursor.getString(mCursor.getColumnIndex(KEY_IMAGE)));
-            ad.setStatus(Ad.Status.valueOf(mCursor.getString(mCursor.getColumnIndex(KEY_STATUS))));
-            return ad;
+            while(mCursor != null) {
+                Ad ad = new Ad();
+                ad.setId(mCursor.getInt(mCursor.getColumnIndex(KEY_ID)));
+                ad.setTitle(mCursor.getString(mCursor.getColumnIndex(KEY_TITLE)));
+                ad.setBody(mCursor.getString(mCursor.getColumnIndex(KEY_BODY)));
+                ad.setUsername(mCursor.getString(mCursor.getColumnIndex(KEY_USERNAME)));
+                ad.setType(Ad.Type.valueOf(mCursor.getString(mCursor.getColumnIndex(KEY_TYPE))));
+                ad.setWoeid(mCursor.getInt(mCursor.getColumnIndex(KEY_WOEID)));
+                ad.setDate(mCursor.getString(mCursor.getColumnIndex(KEY_DATE)));
+                ad.setImageFilename(mCursor.getString(mCursor.getColumnIndex(KEY_IMAGE)));
+                ad.setStatus(Ad.Status.valueOf(mCursor.getString(mCursor.getColumnIndex(KEY_STATUS))));
+                ads.add(ad);
+                mCursor.moveToNext();
+            }
         }
-        return null;
+        return ads;
     }
 
 
@@ -262,5 +270,39 @@ public class DbAdapter{
             return new Woeid(wid, name, admin, country);
         }
         return null;
+    }
+
+
+    public List<Woeid> getWoeids() {
+        List<Woeid> woeids = null;
+
+        Cursor mCursor =
+                sqLiteDatabase.query(true, DATABASE_WOEIDS_TABLE, new String[] {
+                        KEY_ID,
+                        KEY_NAME,
+                        KEY_ADMIN1,
+                        KEY_COUNTRY
+                },
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+        if (mCursor != null && mCursor.getCount() > 0) {
+            woeids = new ArrayList<Woeid>();
+            int wid;
+            String name, admin, country;
+
+            mCursor.moveToFirst();
+            do {
+                wid = mCursor.getInt(mCursor.getColumnIndex(KEY_ID));
+                name = mCursor.getString(mCursor.getColumnIndex(KEY_NAME));
+                admin = mCursor.getString(mCursor.getColumnIndex(KEY_ADMIN1));
+                country = mCursor.getString(mCursor.getColumnIndex(KEY_COUNTRY));
+                woeids.add(new Woeid(wid, name, admin, country));
+            } while(mCursor.moveToNext());
+        }
+        return woeids;
     }
 }

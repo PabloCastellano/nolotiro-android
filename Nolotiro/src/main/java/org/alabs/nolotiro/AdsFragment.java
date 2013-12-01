@@ -1,6 +1,8 @@
 package org.alabs.nolotiro;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -48,8 +50,12 @@ public class AdsFragment extends ListFragment {
     }
 
     public void refreshAds() {
-        //TODO: get woeid from preferences
-        UpdateAdsTask updateTask = new UpdateAdsTask(this, Utils.DEBUG_WOEID);
+        Log.i(TAG, "refreshAds()");
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        int id = sharedPref.getInt("current_woeid", Utils.DEBUG_WOEID);
+
+        UpdateAdsTask updateTask = new UpdateAdsTask(this, id);
         updateTask.execute(1);
     }
 

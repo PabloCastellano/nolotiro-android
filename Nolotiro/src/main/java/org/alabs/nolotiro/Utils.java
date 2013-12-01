@@ -16,12 +16,13 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 
 public class Utils {
 
     private static final String TAG = "NolotiroUtils";
-    public static final Integer DEBUG_WOEID = 766273;
+    public static final Integer DEBUG_WOEID = 766356; // Málaga, Andalucía, España
     private static String NOLOTIRO_DIR = "Nolotiro";
 
     public static String getNolotiroCacheDir(Context ctx) throws NolotiroException {
@@ -153,6 +154,7 @@ public class Utils {
         return new File(nolotiroDir + ad.getImageFilename() + "_thumb.jpg");
     }
 
+<<<<<<< HEAD
     public static Date ISO8601ToDate(String dateString) {
         Calendar c = Calendar.getInstance();
         String[] yearMonthDay = dateString.split("T")[0].split("-");
@@ -169,4 +171,28 @@ public class Utils {
         return c.getTime();
     }
 
+=======
+    public static String removeSpecialChars(String message) {
+        String specialChars = "áéíóúÁÉÍÓÚ";
+        String normalChars = "aeiouAEIOU";
+
+        for (int i = 0; i < specialChars.length(); i++)
+            message = message.replace(specialChars.charAt(i), normalChars.charAt(i));
+
+        return message;
+    }
+
+    // FIXME: This is ugly
+    public static CharSequence[] woeidsToCharSequence(List<Woeid> woeids) {
+        CharSequence[] result = new CharSequence[woeids.size()];
+        int i = 0;
+
+        for (Woeid woeid : woeids) {
+            result[i] = woeid.toString();
+            i++;
+        }
+
+        return result;
+    }
+>>>>>>> Deal with woeids, cache them into DB and allow to change between them
 }

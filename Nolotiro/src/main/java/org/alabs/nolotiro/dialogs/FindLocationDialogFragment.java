@@ -19,9 +19,12 @@ import org.alabs.nolotiro.R;
 // If there's more than one possibility then a new ChooseLocationDialogFragment is shown.
 // The user will choose the correct location and it will be saved with its woeid.
 
+
+//step 2
 public class FindLocationDialogFragment extends DialogFragment {
 
     private static final String TAG = "FindLocationDialogFragment";
+    private String text = null;
 
     public interface FindLocationDialogListener {
         public void onFindDialogPositiveClick(DialogFragment dialog, String location);
@@ -31,6 +34,10 @@ public class FindLocationDialogFragment extends DialogFragment {
 
     public FindLocationDialogFragment() {
 
+    }
+
+    public FindLocationDialogFragment(String _text) {
+        text = _text;
     }
 
     public void onAttach(Activity activity) {
@@ -63,7 +70,11 @@ public class FindLocationDialogFragment extends DialogFragment {
         };
 
         builder.setTitle(R.string.change_location);
-        //textView.setText("Cordoba");
+
+        if (text != null) {
+            textView.setText(text);
+        }
+
         builder.setView(view)
                 .setPositiveButton(R.string.ok, listener)
                 .setNegativeButton(R.string.cancel, listener);

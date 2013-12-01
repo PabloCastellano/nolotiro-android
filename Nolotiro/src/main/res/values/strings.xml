@@ -24,10 +24,4 @@
     <string name="post_comment">Post a comment</string>
     <string name="contact_owner">Contact owner</string>
 
-    <string-array name="example_cities">
-        <item>Málaga</item>
-        <item>Madrid</item>
-        <item>Fuengirola</item>
-    </string-array>
-
 </resources>

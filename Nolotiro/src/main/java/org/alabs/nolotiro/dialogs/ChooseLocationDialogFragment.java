@@ -6,11 +6,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.alabs.nolotiro.R;
+import org.alabs.nolotiro.Utils;
 import org.alabs.nolotiro.Woeid;
 import org.alabs.nolotiro.WoeidPlacesTask;
 
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
+//step 3
 public class ChooseLocationDialogFragment extends DialogFragment {
 
     private static final String TAG = "ChooseLocationDialogFragment";
@@ -49,7 +49,7 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String location = getArguments().getString("location");
         List<Woeid> locations = null;
-        WoeidPlacesTask task = new WoeidPlacesTask();
+        WoeidPlacesTask task = new WoeidPlacesTask(this);
 
         try {
             locations = task.execute(location).get();
@@ -77,23 +77,11 @@ public class ChooseLocationDialogFragment extends DialogFragment {
         };
 
         builder.setTitle(String.format(getResources().getString(R.string.choose_location), location));
-        builder.setSingleChoiceItems(woeidsToCharSequence(locations), 0, null);
+        builder.setSingleChoiceItems(Utils.woeidsToCharSequence(locations), 0, null);
         builder .setPositiveButton(R.string.ok, listener)
                 .setNegativeButton(R.string.cancel, listener);
 
         return builder.create();
     }
 
-    // FIXME: This is ugly
-    public CharSequence[] woeidsToCharSequence(List<Woeid> woeids) {
-        CharSequence[] result = new CharSequence[woeids.size()];
-        int i = 0;
-
-        for (Woeid woeid : woeids) {
-            result[i] = woeid.toString();
-            i++;
-        }
-
-        return result;
-    }
 }
