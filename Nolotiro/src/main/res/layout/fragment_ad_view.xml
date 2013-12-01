@@ -7,6 +7,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_margin="10dp"
         android:id="@+id/scrollView">
 
         <LinearLayout
@@ -15,22 +16,29 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/textTitle" />
+                android:id="@+id/textTitle"
+                android:typeface="sans"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:gravity="center" />
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textDescription" />
+                android:id="@+id/textDescription"
+                android:typeface="sans"
+                android:layout_marginTop="20dp" />
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/imageImage"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp" />
 
             <ProgressBar
                 style="?android:attr/progressBarStyleLarge"

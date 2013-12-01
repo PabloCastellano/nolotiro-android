@@ -23,8 +23,10 @@ public class AdListAdapter extends ArrayAdapter<Ad> {
         Ad ad = getItem(position);
 
         if(ad != null) {
-            TextView textView = (TextView) rowView.findViewById(R.id.ad_title_text);
-            textView.setText(ad.getTitle());
+            TextView titleView = (TextView) rowView.findViewById(R.id.ad_title_text);
+            TextView descriptionView = (TextView) rowView.findViewById(R.id.itemDescription);
+            titleView.setText(ad.getTitle());
+            descriptionView.setText(ad.getBody());
         }
 
         return rowView;
