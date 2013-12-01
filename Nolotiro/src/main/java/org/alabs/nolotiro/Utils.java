@@ -12,6 +12,10 @@ import android.util.Log;
 import org.alabs.nolotiro.exceptions.NolotiroException;
 
 import java.io.File;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class Utils {
@@ -147,6 +151,22 @@ public class Utils {
 
         // TODO: FIXME
         return new File(nolotiroDir + ad.getImageFilename() + "_thumb.jpg");
+    }
+
+    public static Date ISO8601ToDate(String dateString) {
+        Calendar c = Calendar.getInstance();
+        String[] yearMonthDay = dateString.split("T")[0].split("-");
+        String[] timeofDay = dateString.split("T")[1].split("\\.")[0].split(":");
+
+        Integer year = Integer.valueOf(yearMonthDay[0]);
+        Integer month = Integer.valueOf(yearMonthDay[1]);
+        Integer day = Integer.valueOf(yearMonthDay[2]);
+        Integer hour = Integer.valueOf(timeofDay[0]);
+        Integer minute = Integer.valueOf(timeofDay[1]);
+        Integer second = Integer.valueOf(timeofDay[2]);
+
+        c.set(year, month - 1, day, hour, minute, second);
+        return c.getTime();
     }
 
 }

@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AdListAdapter extends ArrayAdapter<Ad> {
@@ -30,8 +32,14 @@ public class AdListAdapter extends ArrayAdapter<Ad> {
         if(ad != null) {
             TextView titleView = (TextView) rowView.findViewById(R.id.ad_title_text);
             TextView descriptionView = (TextView) rowView.findViewById(R.id.itemDescription);
+            TextView dateView = (TextView) rowView.findViewById(R.id.text_date);
+
             titleView.setText(ad.getTitle());
             descriptionView.setText(ad.getBody());
+            Date date = Utils.ISO8601ToDate(ad.getDate());
+            String adDate = getAdDate(date);
+
+            dateView.setText(adDate);
             ImageView image = (ImageView) rowView.findViewById(R.id.imageView);
             LoadThumbnailTask task = new LoadThumbnailTask(activity, image);
             task.execute(ad);
@@ -39,5 +47,31 @@ public class AdListAdapter extends ArrayAdapter<Ad> {
 
         Log.i("getView: ", ad.getTitle());
         return rowView;
+    }
+
+    private String getAdDate(Date date) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.setTimeInMillis(date.getTime());
+
+        String response = "";
+
+        String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String minute = String.valueOf(calendar.get(Calendar.MINUTE));
+
+        float now = System.currentTimeMillis()/1000;
+        float adDate = date.getTime()/1000;
+
+        float daysSince = (now - adDate)/86400;
+
+        if(daysSince > 1) {
+            response = String.valueOf((int)Math.floor(daysSince)) + "d";
+        } else {
+            response = hour + ":" + minute;
+        }
+
+        return response;
+
     }
 }
