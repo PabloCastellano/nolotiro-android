@@ -53,7 +53,6 @@ public class NolotiroAPI {
     }
 
     private void INIT_API_CREDENTIALS() {
-        //TODO: DO NOT COMMIT
         Authenticator.setDefault(new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("nolotiro", "sincondiciones".toCharArray());
@@ -67,7 +66,6 @@ public class NolotiroAPI {
         }
 
         Ad ad = null;
-
         String requestURL = String.format(hostname + AD_API_ENDPOINT, id);
         JSONObject adJSON = makeRequest(requestURL);
         ad = jsonToAd(adJSON);

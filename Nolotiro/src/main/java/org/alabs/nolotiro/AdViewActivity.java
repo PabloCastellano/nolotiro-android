@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import org.alabs.nolotiro.db.DbAdapter;
 
 public class AdViewActivity extends ActionBarActivity {
 
@@ -40,6 +43,10 @@ public class AdViewActivity extends ActionBarActivity {
         
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.ad_view, menu);
+
+        if (ad.isFavorite()) {
+            menu.findItem(R.id.action_bookmark).setIcon(R.drawable.ic_rating_important);
+        }
         return true;
     }
 
@@ -47,12 +54,28 @@ public class AdViewActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_bookmark:
-                boolean status = true;
-                Log.i(TAG, "Bookmark ad=" + ad.getId() + ": " + status);
+                boolean isFavorite = !ad.isFavorite();
+                Log.i(TAG, "Bookmark ad=" + ad.getId() + ": " + isFavorite);
+                DbAdapter dba = new DbAdapter(this);
+                dba.openToWrite();
+                dba.markAdAsFavorite(ad.getId(), isFavorite);
+                dba.close();
+                ad.setFavorite(isFavorite);
+                // toggle icon
+                if (ad.isFavorite()) {
+                    item.setIcon(R.drawable.ic_rating_important);
+                    Toast.makeText(this, getResources().getString(R.id.bookmark_added), Toast.LENGTH_SHORT).show();
+                } else {
+                    item.setIcon(R.drawable.ic_rating_not_important);
+                    Toast.makeText(this, getResources().getString(R.id.bookmark_removed), Toast.LENGTH_SHORT).show();
+                }
+
                 return true;
             case R.id.action_comment:
+                Toast.makeText(this, getResources().getString(R.id.not_yet_implemented), Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_contact:
+                Toast.makeText(this, getResources().getString(R.id.not_yet_implemented), Toast.LENGTH_SHORT).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

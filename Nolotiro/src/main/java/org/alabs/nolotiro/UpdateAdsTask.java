@@ -56,21 +56,27 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
                 if (ads != null) {
                     AdListAdapter adapter = (AdListAdapter) fragment.getListAdapter();
                     DbAdapter dba = new DbAdapter(context);
+                    boolean isFav;
                     dba.openToWrite();
 
                     if(adapter == null) {
+                        for(Ad ad : ads) {
+                            dba.insertAd(ad);
+                            isFav = dba.isAdFavorite(ad.getId());
+                            ad.setFavorite(isFav);
+                        }
+
                         adapter = new AdListAdapter(fragment.getActivity(), ads);
                         fragment.setListAdapter(adapter);
 
-                        for(Ad ad : ads) {
-                            dba.insertAd(ad);
-                        }
 
                     } else {
                         // addAll() is only available on API >= 11
                         for(Ad ad : ads) {
-                            adapter.add(ad);
                             dba.insertAd(ad);
+                            isFav = dba.isAdFavorite(ad.getId());
+                            ad.setFavorite(isFav);
+                            adapter.add(ad);
                         }
 
                     }

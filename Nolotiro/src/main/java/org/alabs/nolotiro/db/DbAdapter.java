@@ -16,6 +16,12 @@ import java.util.List;
 
 public class DbAdapter{
 
+    // database
+    private static final String DATABASE_NAME = "nolotiro";
+    private static final String DATABASE_ADS_TABLE = "ads";
+    private static final String DATABASE_WOEIDS_TABLE = "woeids";
+    private static final int DATABASE_VERSION = 1;
+
     // ads table
     public static final String KEY_ID = BaseColumns._ID;
     public static final String KEY_TITLE = "title";
@@ -28,15 +34,11 @@ public class DbAdapter{
     public static final String KEY_STATUS = "status";
     public static final String KEY_FAVORITE = "favorite";
 
-    private static final String DATABASE_NAME = "nolotiro";
-    private static final String DATABASE_ADS_TABLE = "ads";
-    private static final String DATABASE_WOEIDS_TABLE = "woeids";
-    private static final int DATABASE_VERSION = 1;
-
     // woeids table
     public static final String KEY_NAME = "name";
     public static final String KEY_ADMIN1 = "admin1";
     public static final String KEY_COUNTRY = "country";
+
 
     private static final String DATABASE_CREATE_ADS_TABLE = "create table " + DATABASE_ADS_TABLE + " (" +
             KEY_ID +" integer primary key, "+
@@ -124,7 +126,8 @@ public class DbAdapter{
                         KEY_WOEID,
                         KEY_DATE,
                         KEY_IMAGE,
-                        KEY_STATUS
+                        KEY_STATUS,
+                        KEY_FAVORITE
                 },
                         KEY_ID + "= '" + id + "'",
                         null,
@@ -145,6 +148,12 @@ public class DbAdapter{
             ad.setDate(mCursor.getString(mCursor.getColumnIndex(KEY_DATE)));
             ad.setImageFilename(mCursor.getString(mCursor.getColumnIndex(KEY_IMAGE)));
             ad.setStatus(Ad.Status.valueOf(mCursor.getString(mCursor.getColumnIndex(KEY_STATUS))));
+
+            if (mCursor.getInt(mCursor.getColumnIndex(KEY_FAVORITE)) == 1)
+                ad.setFavorite(true);
+            else
+                ad.setFavorite(false);
+
             return ad;
         }
         return null;
@@ -187,12 +196,33 @@ public class DbAdapter{
         return null;
     }
 
+
+    public boolean isAdFavorite(int id) throws SQLException {
+        Cursor mCursor =
+                sqLiteDatabase.query(DATABASE_ADS_TABLE, new String[] {
+                        KEY_FAVORITE
+                },
+                        KEY_ID + "= '" + id + "'",
+                        null,
+                        //KEY_ID + "= '?s'",
+                        //new String[] { Integer.toString(id) },
+                        null,
+                        null,
+                        null);
+        if (mCursor != null && mCursor.getCount() > 0) {
+            mCursor.moveToFirst();
+            return mCursor.getInt(mCursor.getColumnIndex(KEY_FAVORITE)) != 0;
+        }
+        return false;
+    }
+
     public boolean markAdAsFavorite(int id, boolean fav) {
         ContentValues args = new ContentValues();
         args.put(KEY_FAVORITE, fav);
         return sqLiteDatabase.update(DATABASE_ADS_TABLE, args, KEY_ID + "='" + id + "'", null) > 0;
     }
 
+    // TODO
     public List<Ad> getAdsFromWoeid(int woeid) {
         return null;
     }
@@ -204,7 +234,7 @@ public class DbAdapter{
         values.put(KEY_NAME, woeid.getName());
         values.put(KEY_ADMIN1, woeid.getAdmin());
         values.put(KEY_COUNTRY, woeid.getCountry());
-        return sqLiteDatabase.insert(DATABASE_WOEIDS_TABLE, null, values);
+        return sqLiteDatabase.insertWithOnConflict(DATABASE_WOEIDS_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
     public Woeid getWoeid(int id) throws SQLException {

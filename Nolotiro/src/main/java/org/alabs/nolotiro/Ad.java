@@ -7,22 +7,6 @@ public class Ad implements Serializable {
     public static enum Type { GIVE, WANT };
     public static enum Status { AVAILABLE, BOOKED, DELIVERED };
 
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", body='" + body + '\'' +
-                ", username='" + username + '\'' +
-                ", type=" + type +
-                ", woeid=" + woeid +
-                ", date_created='" + date_created + '\'' +
-                ", image_file_name='" + image_file_name + '\'' +
-                ", status=" + status +
-                ", comments_enabled=" + comments_enabled +
-                '}';
-    }
-
     private int id;
     private String title;
     private String body;
@@ -33,6 +17,7 @@ public class Ad implements Serializable {
     private String image_file_name;
     private Ad.Status status;
     private boolean comments_enabled;
+    private boolean favorite;
 
     public Ad() {
 
@@ -117,5 +102,29 @@ public class Ad implements Serializable {
 
     public void setCommentsEnabled(boolean comments_enabled) {
         this.comments_enabled = comments_enabled;
+    }
+
+    public void setFavorite(boolean fav) {
+        favorite = fav;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public String toString() {
+        return "Ad{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", username='" + username + '\'' +
+                ", type=" + type +
+                ", woeid=" + woeid +
+                ", date_created='" + date_created + '\'' +
+                ", image_file_name='" + image_file_name + '\'' +
+                ", status=" + status +
+                ", comments_enabled=" + comments_enabled +
+                ", favorite=" + favorite +
+                '}';
     }
 }
