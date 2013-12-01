@@ -66,7 +66,7 @@ public class AdListAdapter extends ArrayAdapter<Ad> {
             task.execute(ad);
         }
 
-        Log.i("getView: ", ad.getTitle());
+        //Log.i("getView: ", ad.getTitle());
         return rowView;
     }
 

@@ -35,6 +35,7 @@ import org.alabs.nolotiro.db.DbAdapter;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 // This task retrieves ads and updates the ListView
@@ -64,6 +65,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
         //progress.show();
     }
 
+    // TODO: check isCancelled()
     protected void onPostExecute(final List<Ad> ads) {
         final String finalMessage = errorMessage;
 
@@ -104,7 +106,7 @@ public class UpdateAdsTask extends AsyncTask<Integer, Void, List<Ad>> {
                     dba.close();
                     adapter.notifyDataSetChanged();
                 } else {
-                    fragment.setListAdapter(null);
+                    fragment.setListAdapter(new AdListAdapter(fragment.getActivity(), new ArrayList<Ad>()));
                     Toast.makeText(context, finalMessage, Toast.LENGTH_LONG).show();
                 }
             }

@@ -44,6 +44,8 @@ import org.alabs.nolotiro.dialogs.ChangeLocationDialogFragment;
 import org.alabs.nolotiro.dialogs.ChooseLocationDialogFragment;
 import org.alabs.nolotiro.dialogs.FindLocationDialogFragment;
 
+import java.util.ArrayList;
+
 public class MainActivity extends ActionBarActivity implements ChangeLocationDialogFragment.ChangeLocationDialogListener,
         FindLocationDialogFragment.FindLocationDialogListener, ChooseLocationDialogFragment.ChooseLocationDialogListener {
 
@@ -88,10 +90,12 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
                 .setTabListener(new TabListener<AdsFragment>(this, GIVES_TAG, AdsFragment.class));
         actionBar.addTab(tab);
 
+        /*
         tab = actionBar.newTab()
                 .setText(R.string.wants)
                 .setTabListener(new TabListener<AdsFragment>(this, WANTS_TAG, AdsFragment.class));
         actionBar.addTab(tab);
+        */
 
     }
 
@@ -187,8 +191,11 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
         updateTitle();
 
         // refreshAds
-        ListFragment f = (ListFragment) getSupportFragmentManager().findFragmentByTag(GIVES_TAG);
-        f.setListAdapter(null);
+        AdsFragment f = (AdsFragment) getSupportFragmentManager().findFragmentByTag(GIVES_TAG);
+        AdListAdapter adapter = ((AdListAdapter) f.getListAdapter());
+        adapter.clear();
+        f.refreshAds(currentWoeid.getId());
+        adapter.notifyDataSetChanged();
     }
 
     private void updateTitle() {

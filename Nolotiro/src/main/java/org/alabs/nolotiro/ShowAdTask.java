@@ -78,17 +78,26 @@ public class ShowAdTask extends AsyncTask<Void, Void, Bitmap> {
         fragment.getActivity().setTitle(ad.getTitle());
     }
 
-    protected void onPostExecute(final Bitmap bitmap) {
+    protected void onPostExecute(Bitmap bitmap) {
         final String finalMessage = errorMessage;
+
+        if (fragment == null || fragment.getActivity() == null) {
+            return;
+        }
+
+        if (isCancelled()) {
+            bitmap = null;
+        }
+        final Bitmap finalBitmap = bitmap;
 
         // Set image and hide progress animation
         fragment.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 ProgressBar progress = (ProgressBar)fragment.getActivity().findViewById(R.id.progressBar);
                 progress.setVisibility(View.GONE);
-                if(bitmap != null) {
+                if(finalBitmap != null) {
                     image.setVisibility(View.VISIBLE);
-                    image.setImageBitmap(bitmap);
+                    image.setImageBitmap(finalBitmap);
                 } else if (errorMessage != null) {
                     Toast.makeText(context, finalMessage, Toast.LENGTH_LONG).show();
                 }

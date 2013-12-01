@@ -49,14 +49,23 @@ public class AdsFragment extends ListFragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.getListView().setOnScrollListener(new EndlessScrollListener());
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        int id = sharedPref.getInt("current_woeid", Utils.DEBUG_WOEID);
+        setScrollListener(id);
         if(!recreated) {
-            refreshAds();
+            refreshAds(id);
             recreated = true;
             // TODO: Restore position
         }
     }
 
+    public void setScrollListener(int id) {
+        this.getListView().setOnScrollListener(new EndlessScrollListener(id));
+    }
+
+    public void unsetScrollListener() {
+        this.getListView().setOnScrollListener(null);
+    }
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // TODO: Save position
@@ -69,14 +78,12 @@ public class AdsFragment extends ListFragment {
         startActivity(new Intent(getActivity(), AdViewActivity.class).putExtra("ad", ad));
     }
 
-    public void refreshAds() {
+    public void refreshAds(int id) {
         Log.i(TAG, "refreshAds()");
-
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        int id = sharedPref.getInt("current_woeid", Utils.DEBUG_WOEID);
-
+        unsetScrollListener();
         UpdateAdsTask updateTask = new UpdateAdsTask(this, id);
         updateTask.execute(1);
+        setScrollListener(id);
     }
 
     //Seen on http://benjii.me/2010/08/endless-scrolling-listview-in-android/
@@ -86,13 +93,15 @@ public class AdsFragment extends ListFragment {
         private int currentPage = 1;
         private int previousTotal = 0;
         private boolean loading = true;
+        private int id;
 
-        public EndlessScrollListener() {
+        public EndlessScrollListener(int _id) {
+            id = _id;
         }
 
-        public EndlessScrollListener(int visibleThreshold) {
-            this.visibleThreshold = visibleThreshold;
-        }
+        //public EndlessScrollListener(int visibleThreshold) {
+        //    this.visibleThreshold = visibleThreshold;
+        //}
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem,
@@ -107,8 +116,9 @@ public class AdsFragment extends ListFragment {
             if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                 // I load the next page of gigs using a background task,
                 // but you can call any function here.
-                //TODO: get woeid from preferences
-                new UpdateAdsTask(AdsFragment.this, Utils.DEBUG_WOEID).execute(currentPage + 1);
+                //Log.i(TAG, "Loading next page: " + nolotiroPage + " (currentPage=" + currentPage);
+                Log.i(TAG, "Loading next page: " + (currentPage));
+                new UpdateAdsTask(AdsFragment.this, id).execute(currentPage);
                 loading = true;
             }
         }

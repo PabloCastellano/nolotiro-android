@@ -57,14 +57,19 @@ public class LoadThumbnailTask extends AsyncTask<Ad, Void, Bitmap> {
 
     }
 
-    protected void onPostExecute(final Bitmap bitmap) {
+    protected void onPostExecute(Bitmap bitmap) {
+        if (isCancelled()) {
+            bitmap = null;
+        }
+
+        final Bitmap finalBitmap = bitmap;
         // Set image and hide progress animation
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 //ProgressBar progress = (ProgressBar) activity.findViewById(R.id.progressBar);
                 //progress.setVisibility(View.GONE);
-                if (bitmap != null) {
-                    image.setImageBitmap(bitmap);
+                if (finalBitmap != null) {
+                    image.setImageBitmap(finalBitmap);
                 } else {
                     image.setImageResource(R.drawable.no_logo);
                 }
