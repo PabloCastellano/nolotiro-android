@@ -82,7 +82,7 @@ public class CreateAdActivity extends ActionBarActivity {
     public static String getNolotiroPhotoName() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         Calendar cal = Calendar.getInstance();
-        return String.format("nolotiro_%s.png", dateFormat.format(cal.getTime()));
+        return String.format("nolotiro_%s.jpg", dateFormat.format(cal.getTime()));
     }
 
     public void setPhotoFromCamera(Intent data, ImageButton button) {
