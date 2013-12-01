@@ -70,6 +70,11 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
             currentWoeid = new Woeid(Utils.DEBUG_WOEID, "Málaga", "Andalucía", "España");
             dba.openToWrite();
             dba.insertWoeid(currentWoeid);
+            dba.insertWoeid(new Woeid(753692, "Barcelona", "Cataluña", "España"));
+            dba.insertWoeid(new Woeid(766273, "Madrid", "Madrid", "España"));
+            dba.insertWoeid(new Woeid(761023, "Fuengirola", "Andalucía", "España"));
+            dba.insertWoeid(new Woeid(773692, "Santa Cruz de Tenerife", "Islas Canarias", "España"));
+            dba.insertWoeid(new Woeid(779063, "Zaragoza", "Aragón", "España"));
             dba.close();
         }
 
@@ -114,6 +119,7 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
                 //fragment.refreshAds();
                 // FIXME: getSupportFragmentManager() doesn't have findFragmentByTag() method
                 //Fragment f = this.getFragmentManager().findFragmentByTag(GIVES_TAG);
+                changeWoeid(currentWoeid);
                 return true;
             case R.id.action_settings:
                 intent = new Intent(this, SettingsActivity.class);
