@@ -64,18 +64,18 @@ public class AdViewActivity extends ActionBarActivity {
                 // toggle icon
                 if (ad.isFavorite()) {
                     item.setIcon(R.drawable.ic_rating_important);
-                    Toast.makeText(this, getResources().getString(R.id.bookmark_added), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getResources().getString(R.string.bookmark_added), Toast.LENGTH_SHORT).show();
                 } else {
                     item.setIcon(R.drawable.ic_rating_not_important);
-                    Toast.makeText(this, getResources().getString(R.id.bookmark_removed), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getResources().getString(R.string.bookmark_removed), Toast.LENGTH_SHORT).show();
                 }
 
                 return true;
             case R.id.action_comment:
-                Toast.makeText(this, getResources().getString(R.id.not_yet_implemented), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getResources().getString(R.string.not_yet_implemented), Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_contact:
-                Toast.makeText(this, getResources().getString(R.id.not_yet_implemented), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getResources().getString(R.string.not_yet_implemented), Toast.LENGTH_SHORT).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

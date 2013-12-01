@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="not_yet_implemented" type="id">Not yet implemented! ;-)</item>
-    <item name="bookmark_added" type="id">Bookmark added</item>
-    <item name="bookmark_removed" type="id">Bookmark removed</item>
-</resources>

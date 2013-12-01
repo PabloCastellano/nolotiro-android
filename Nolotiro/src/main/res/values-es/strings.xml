@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Nolotiro</string>
+    <string name="change_location">Cambiar ciudad</string>
+    <string name="action_refresh">Actualizar</string>
+    <string name="action_settings">Configuración</string>
+    <string name="wants">Regalo</string>
+    <string name="gives">Busco</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancelar</string>
+    <string name="choose_location">Elige tu \"%1$s\"</string>
+    <string name="add_new">Añadir nueva</string>
+    <string name="create_new_ad">Publicar anuncio</string>
+    <string name="create_new_ad_in">Publicar anuncio en %1$s</string>
+    <string name="title_activity_ad_view">Ad</string>
+    <string name="error_connecting">Hubo un error conectando al servidor. Por favor comprueba el nombre del host y tu conexión a Internet</string>
+    <string name="error_retrieving_ad">Hubo un error recuperando los datos de este anuncio</string>
+    <string name="error_retrieving_ads">Hubo un error recuperando los datos de anuncios</string>
+    <string name="loading">Cargando...</string>
+    <string name="bookmark">Favorito</string>
+    <string name="post_comment">Dejar un comentario</string>
+    <string name="contact_owner">Contactar al dueño</string>
+
+</resources>

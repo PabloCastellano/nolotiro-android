@@ -1,0 +1,46 @@
+<resources>
+    <string name="title_activity_settings">Configuración</string>
+
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_enable_alerts">Activar alerts</string>
+    <string name="pref_description_enable_alerts">Activar alertas</string>
+
+    <string name="pref_title_hostname">Servidor</string>
+    <string name="pref_default_hostname">http://nolotiro.org</string>
+
+    <string name="pref_title_city">Ciudad</string>
+    <string name="pref_default_city">Málaga</string>
+
+    <string name="pref_header_username">Configuración de usuario</string>
+    <string name="pref_header_advanced">Avanzado</string>
+
+    <string name="pref_header_alerts">Alertas</string>
+
+    <string name="pref_title_username">Usuario</string>
+    <string name="pref_title_password">Contraseña</string>
+    <string name="pref_title_interval_update">Intervalo de actualización</string>
+
+    <string-array name="pref_interval_updates_titles">
+        <item>5 minutos</item>
+        <item>10 minutos</item>
+        <item>30 minutos</item>
+        <item>1 hora</item>
+        <item>3 horas</item>
+        <item>12 horas</item>
+    </string-array>
+
+    <string-array name="pref_interval_updates_values">
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+    </string-array>
+
+    <string name="pref_title_keywords">Palabras clave</string>
+
+
+
+</resources>
