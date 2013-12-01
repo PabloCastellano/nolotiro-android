@@ -31,8 +31,12 @@ public class MainActivity extends ActionBarActivity implements ChangeLocationDia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TODO: fix real current woeid
         currentWoeid = new Woeid(1, "Málaga", "Andalusia", "Spain");
         actionBar = getSupportActionBar();
+
+        String title = getResources().getString(R.string.app_name) + " (" + currentWoeid.getName() + ")";
+        actionBar.setTitle(title);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         Tab tab = actionBar.newTab()
