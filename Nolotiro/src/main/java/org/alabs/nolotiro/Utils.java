@@ -154,7 +154,6 @@ public class Utils {
         return new File(nolotiroDir + ad.getImageFilename() + "_thumb.jpg");
     }
 
-<<<<<<< HEAD
     public static Date ISO8601ToDate(String dateString) {
         Calendar c = Calendar.getInstance();
         String[] yearMonthDay = dateString.split("T")[0].split("-");
@@ -171,7 +170,6 @@ public class Utils {
         return c.getTime();
     }
 
-=======
     public static String removeSpecialChars(String message) {
         String specialChars = "áéíóúÁÉÍÓÚ";
         String normalChars = "aeiouAEIOU";
@@ -194,5 +192,4 @@ public class Utils {
 
         return result;
     }
->>>>>>> Deal with woeids, cache them into DB and allow to change between them
 }
