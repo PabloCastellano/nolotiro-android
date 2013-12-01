@@ -1,7 +1,5 @@
 package org.alabs.nolotiro;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +58,7 @@ public class NolotiroAPI {
         });
     }
 
+    // Given an id, retrieve ad through the API or cache if already available
     public Ad getAd(int id) throws JSONException, IOException {
         if(cache.containsKey(id)) {
             return cache.get(id);
@@ -76,8 +75,11 @@ public class NolotiroAPI {
         return ad;
     }
 
-    public List<Ad> getWants(int offset, int woeId) throws IOException, JSONException {
-        String requestURL = String.format(hostname + LIST_WANTS_BY_WOEID, woeId, offset);
+    // Given a woeid, retrieve "Wants" ads through the API
+    // Use the page parameter to paginate the results
+    // TODO: not working on server side
+    public List<Ad> getWants(int page, int woeId) throws IOException, JSONException {
+        String requestURL = String.format(hostname + LIST_WANTS_BY_WOEID, woeId, page);
         List<Ad> ads = new ArrayList<Ad>();
 
         JSONObject response = makeRequest(requestURL);
@@ -89,8 +91,10 @@ public class NolotiroAPI {
         return ads;
     }
 
-    public List<Ad> getGives(int offset, int woeId) throws IOException, JSONException {
-        String requestURL = String.format(hostname + LIST_GIVES_BY_WOEID, woeId, offset);
+    // Given a woeid, retrieve "Gives" ads through the API
+    // Use the page parameter to paginate the results
+    public List<Ad> getGives(int page, int woeId) throws IOException, JSONException {
+        String requestURL = String.format(hostname + LIST_GIVES_BY_WOEID, woeId, page);
         List<Ad> ads = new ArrayList<Ad>();
 
         JSONObject response = makeRequest(requestURL);
@@ -102,6 +106,7 @@ public class NolotiroAPI {
         return ads;
     }
 
+    // Handle HTTP request
     private JSONObject makeRequest(String url) throws IOException, JSONException {
         URL requestURL = new URL(url);
         HttpURLConnection urlConnection = (HttpURLConnection) requestURL.openConnection();
@@ -109,18 +114,14 @@ public class NolotiroAPI {
         urlConnection.setRequestMethod("GET");
         String response = "";
 
-        try {
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            response = readInputStream(in);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            urlConnection.disconnect();
-        }
+        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+        response = readInputStream(in);
+        urlConnection.disconnect();
 
         return new JSONObject(response);
     }
 
+    // Load inputstream content into string
     private String readInputStream(InputStream in) {
         String result = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -137,6 +138,7 @@ public class NolotiroAPI {
         return result;
     }
 
+    // Given a JSON object, return Ad object
     private Ad jsonToAd(JSONObject json) {
         Ad ad = new Ad();
 
@@ -171,6 +173,7 @@ public class NolotiroAPI {
         return ad;
     }
 
+    // Build url to ad photo
     // Returns null if there's no photo
     public URL getPhotoUrlFromAd(Ad ad) throws MalformedURLException {
         String filename = ad.getImageFilename();
@@ -180,6 +183,7 @@ public class NolotiroAPI {
         return url;
     }
 
+    // Build url to ad thumbnail photo
     // Returns null if there's no photo
     public URL getThumbnailUrlFromAd(Ad ad) throws MalformedURLException {
         String filename = ad.getImageFilename();
@@ -189,10 +193,12 @@ public class NolotiroAPI {
         return url;
     }
 
+    // Change nolotiro server hostname
     public void setHostname(String _hostname) {
         hostname = _hostname;
     }
 
+    // Change API language
     public void setLangId(String _langId) {
         langId = _langId;
     }
