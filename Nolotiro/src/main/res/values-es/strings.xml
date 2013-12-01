@@ -21,5 +21,10 @@
     <string name="bookmark">Favorito</string>
     <string name="post_comment">Dejar un comentario</string>
     <string name="contact_owner">Contactar al dueño</string>
-
+    <string name="not_yet_implemented">Esta funcionalidad no está implementada todavía ;-(</string>
+    <string name="bookmark_added">Añadido a favoritos</string>
+    <string name="bookmark_removed">Eliminado de favoritos</string>
+    <string name="title_ad">Título de tu anuncio</string>
+    <string name="ad_body">Cuerpo del anuncio</string>
+    <string name="allow_comments">Permitir comentarios públicos</string>
 </resources>

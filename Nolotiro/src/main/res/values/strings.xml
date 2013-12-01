@@ -21,8 +21,10 @@
     <string name="bookmark">Bookmark</string>
     <string name="post_comment">Post a comment</string>
     <string name="contact_owner">Contact owner</string>
-
-    <string name="not_yet_implemented">Not yet implemented! ;-)</string>
+    <string name="not_yet_implemented">This feature is not yet implemented ;-(</string>
     <string name="bookmark_added">Bookmark added</string>
     <string name="bookmark_removed">Bookmark removed</string>
+    <string name="title_ad">Title of your ad</string>
+    <string name="ad_body">Ad body</string>
+    <string name="allow_comments">Allow public comments</string>
 </resources>

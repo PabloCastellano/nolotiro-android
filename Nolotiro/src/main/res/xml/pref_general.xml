@@ -7,7 +7,7 @@
         android:defaultValue="true" />
 
     <EditTextPreference
-        android:key="default_city"
+        android:key="current_woeid"
         android:title="@string/pref_title_city"
         android:defaultValue="@string/pref_default_city"
         android:selectAllOnFocus="true"

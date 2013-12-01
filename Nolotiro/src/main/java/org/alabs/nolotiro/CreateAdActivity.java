@@ -22,6 +22,8 @@
 package org.alabs.nolotiro;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -170,6 +172,8 @@ public class CreateAdActivity extends ActionBarActivity {
 
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_create_ad, container, false);
+
+            Toast.makeText(getActivity(), getResources().getString(R.string.not_yet_implemented), Toast.LENGTH_LONG).show();
 
             button = (ImageButton) rootView.findViewById(R.id.choose_photo_button);
             View.OnClickListener listener1 = new View.OnClickListener() {

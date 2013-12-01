@@ -3,7 +3,7 @@
     <ListPreference
         android:key="interval_update"
         android:title="@string/pref_title_interval_update"
-        android:defaultValue="15"
+        android:defaultValue="60"
         android:entries="@array/pref_interval_updates_titles"
         android:entryValues="@array/pref_interval_updates_values"
         android:negativeButtonText="@null"

@@ -25,13 +25,22 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editText"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:hint="@string/title_ad" />
 
     <EditText
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
-        android:id="@+id/editText2" />
+        android:id="@+id/editText2"
+        android:hint="@string/ad_body" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/allow_comments"
+        android:id="@+id/checkBox"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
