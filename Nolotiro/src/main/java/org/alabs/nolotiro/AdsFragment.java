@@ -29,9 +29,9 @@ public class AdsFragment extends ListFragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.getListView().setOnScrollListener(new EndlessScrollListener());
         if(!recreated) {
             refreshAds();
-            this.getListView().setOnScrollListener(new EndlessScrollListener());
             recreated = true;
             // TODO: Restore position
         }
