@@ -140,7 +140,7 @@ public class SettingsActivity extends PreferenceActivity {
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
 
-        bindPreferenceSummaryToValue(findPreference("default_city"));
+        bindPreferenceSummaryToValue(findPreference("current_woeid"));
         bindPreferenceSummaryToValue(findPreference("interval_update"));
         bindPreferenceSummaryToValue(findPreference("alert_keywords"));
         bindPreferenceSummaryToValue(findPreference("username"));
