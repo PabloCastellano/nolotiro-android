@@ -16,7 +16,7 @@
         android:layout_height="50dp"
         android:id="@+id/imageView"
         android:background="@drawable/no_logo"
-        android:layout_weight="0.2"
+        android:layout_weight="0.1"
         android:layout_marginRight="10dp"
         android:scaleType="fitXY" />
 
@@ -24,7 +24,7 @@
         android:orientation="vertical"
         android:layout_width="0dip"
         android:layout_height="fill_parent"
-        android:layout_weight="0.8">
+        android:layout_weight="0.9">
 
         <LinearLayout
             android:orientation="horizontal"
