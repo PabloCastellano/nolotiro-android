@@ -137,5 +137,16 @@ public class Utils {
         return new File(nolotiroDir + ad.getImageFilename());
     }
 
+    public static File getThumbnailPath(Context ctx, Ad ad) throws NolotiroException {
+        String nolotiroDir = Utils.getNolotiroCacheDir(ctx);
+        File f = new File(nolotiroDir);
+        if (!f.exists()) {
+            Log.i(TAG, "Mkdir " + f);
+            f.mkdirs();
+        }
+
+        // TODO: FIXME
+        return new File(nolotiroDir + ad.getImageFilename() + "_thumb.jpg");
+    }
 
 }

@@ -1,18 +1,23 @@
 package org.alabs.nolotiro;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 public class AdListAdapter extends ArrayAdapter<Ad> {
 
-    public AdListAdapter(Activity activity, List<Ad> ads) {
-        super(activity, 0, ads);
+    private Activity activity;
+
+    public AdListAdapter(Activity _activity, List<Ad> ads) {
+        super(_activity, 0, ads);
+        activity = _activity;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -27,8 +32,12 @@ public class AdListAdapter extends ArrayAdapter<Ad> {
             TextView descriptionView = (TextView) rowView.findViewById(R.id.itemDescription);
             titleView.setText(ad.getTitle());
             descriptionView.setText(ad.getBody());
+            ImageView image = (ImageView) rowView.findViewById(R.id.imageView);
+            LoadThumbnailTask task = new LoadThumbnailTask(activity, image);
+            task.execute(ad);
         }
 
+        Log.i("getView: ", ad.getTitle());
         return rowView;
     }
 }
