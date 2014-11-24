@@ -176,7 +176,7 @@ public class NolotiroAPI {
                     ad.setType(Ad.Type.WANT);
             }
             if (json.has("woeid_code")) { ad.setWoeid(json.getInt("woeid_code")); }
-            if (json.has("date_created")) { ad.setDate(json.getString("date_created")); }
+            if (json.has("created_at")) { ad.setDate(json.getString("created_at")); }
             if (json.has("image_file_name")) { ad.setImageFilename(json.getString("image_file_name")); }
             try {
                 if (json.has("status")) { ad.setStatus(Ad.Status.valueOf(json.getString("status").toUpperCase())); }
