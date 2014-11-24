@@ -6,6 +6,7 @@
 *.ear
 
 .gradle
+/build
 /local.properties
 /.idea/workspace.xml
 /.idea/misc.xml
